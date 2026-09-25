@@ -12,7 +12,7 @@ Graphics are in this folder: `icon-512.png`, `feature-graphic.png`, `screenshots
 | Category | Strategy (alternative: Simulation) |
 | Free or paid | Free |
 | Default language | English (United Kingdom) — en-GB |
-| Contact email | andvidk@gmail.com |
+| Contact email | midnightsyntaxlabs@gmail.com |
 | Website | https://alderman-2026.web.app |
 | Privacy policy | https://alderman-2026.web.app/privacy.html |
 | Tags (up to 5) | Strategy, Simulation, Trading, Historical, Offline |
