@@ -38,13 +38,14 @@ allow some steps to be automated (creating the Play app, first upload, App conte
 <game>/
 ├─ public/                 the game (HTML/CSS/JS), served as-is in development
 │  ├─ index.html, css/, js/game.js, js/native.js, vendor/, fonts/, audio/, privacy.html
-├─ tools/
+├─ tools/                 reusable as-is in the next game (see tools/README.md)
 │  ├─ build.mjs            public/ -> www/ (compress audio, stamp version)
 │  ├─ firebase-entry.js    which Firebase SDK parts to bundle -> public/vendor/firebase.js
 │  ├─ play.mjs             Google Play API: upload, promote, rollout, halt, status, listing
 │  ├─ make-upload-key.ps1  creates the Play upload key (you run it; it asks for a password)
 │  ├─ copy-ci-secrets.ps1  puts the signing secrets on your clipboard for GitHub
-│  └─ rules.test.mjs       Firestore security rules tests
+│  ├─ rules.test.mjs       Firestore security rules tests
+│  └─ ci/                  workflow templates: copy to .github/workflows/
 ├─ android/                Capacitor project (committed)
 ├─ assets/                 icon/splash sources for @capacitor/assets
 ├─ store/                  listing.md, app-content.md, whatsnew/en-GB.txt, icon, feature graphic, screenshots
@@ -53,8 +54,10 @@ allow some steps to be automated (creating the Play app, first upload, App conte
 ├─ capacitor.config.json, firebase.json, firestore.rules, package.json, RELEASE.md
 ```
 
-Files to copy and then search-and-replace the table values in: `tools/*`, `.github/workflows/*`,
-`capacitor.config.json`, `firebase.json`, `firestore.rules`, `package.json` (scripts, devDependencies),
+**The `tools/` folder is game-agnostic:** copy it whole. It reads the game's name from `package.json`
+(`name`) and the package name from `capacitor.config.json` (`appId`). Copy `tools/ci/*.yml` to
+`.github/workflows/` unchanged. Then search-and-replace the table values in:
+`capacitor.config.json`, `firebase.json`, `firestore.rules`, `package.json` (name, scripts, devDependencies),
 `android/app/build.gradle` (version + signing blocks), `android/variables.gradle` (Google sign-in lines),
 `android/app/src/main/AndroidManifest.xml` (permissions, portrait, cleartext off), `public/js/native.js`.
 
@@ -150,7 +153,7 @@ npx capacitor-assets generate --android --iconBackgroundColor "#1c2a2c" --splash
 
 Then apply Alderman's edits:
 - **AndroidManifest:** portrait, `usesCleartextTraffic="false"`, `POST_NOTIFICATIONS`, and remove `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM` with `tools:node="remove"` (otherwise Play asks for an exact-alarm declaration).
-- **app/build.gradle:** version from package.json or the `ALDERMAN_*` environment variables (rename per game), and signing from `keystore.properties` or environment variables.
+- **app/build.gradle:** version from package.json or `APP_VERSION_NAME` / `APP_VERSION_CODE` (set by CI from the tag), and signing from `keystore.properties` or environment variables. The key alias defaults to `<package.json name>-upload`.
 - **variables.gradle:** `rgcfaIncludeGoogle = true` (native Google sign-in).
 - Target and compile SDK **36**: Google Play has required API 36 for new apps and updates since 31 Aug 2026. Check the current rule each year.
 
@@ -187,7 +190,7 @@ npm run android:bundle         # signed .aab (needs android/keystore.properties)
 powershell -ExecutionPolicy Bypass -File tools\make-upload-key.ps1
 ```
 
-- Asks for a password and creates `%USERPROFILE%\.android-keys\<game>-upload.jks` plus `android/keystore.properties`.
+- Asks for a password and creates `%USERPROFILE%\.android-keys\<name>-upload.jks` (name from package.json) plus `android/keystore.properties`.
 - Store the password and a copy of the `.jks` in the password manager.
 - Get the upload key fingerprints without the password: `keytool -printcert -jarfile release\<game>-1.0.0.aab`.
 - Register both fingerprints in Firebase (step 4).
@@ -286,7 +289,7 @@ domain, update the Play listing and the in-game Settings link.
 8. **Google sign-in doesn't work inside an Android WebView popup.** Use `@capacitor-firebase/authentication` with `skipNativeAuth`, then `signInWithCredential` / `linkWithCredential` in the web SDK.
 9. **Capacitor serves the app from `https://localhost`,** so "is localhost" checks turn developer mode on. Detect `Capacitor.isNativePlatform()` first.
 10. **IAM changes take 1–5 minutes;** Play Console permission changes can take much longer.
-11. **Claude's remote file tools may not write into `.github/`.** Claude puts the workflows in `tools/ci/`, and you move them and push.
+11. **Claude's remote file tools may not write into `.github/`.** The templates live in `tools/ci/`; you copy them into `.github/workflows/` and push.
 12. **When Claude copies files to the PC, re-copying to the same path sometimes wrote an old version.** Check MD5 hashes after copying, or copy under a new name and rename.
 13. **`firebase` isn't on the PATH when npm scripts run through `cmd`** from some shells. Run `firebase deploy …` directly in PowerShell if `npm run deploy` says "not recognized".
 14. **Play's API is sometimes briefly unavailable (503).** Retry after a few seconds.
@@ -298,7 +301,7 @@ domain, update the Play listing and the in-game Settings link.
 - [ ] Fill in the table in section 0 and pick the package name
 - [ ] Create the GitHub repo, `git init`, `.gitignore`, first push
 - [ ] Firebase project, web app, Firestore, Auth providers, rules and tests, hosting deploy
-- [ ] Copy tools, workflows and configs from Alderman; replace names
+- [ ] Copy `tools/` as-is and `tools/ci/*.yml` → `.github/workflows/`; copy configs from Alderman and replace names
 - [ ] Capacitor wrapper, manifest and Gradle edits, icons and splash, debug build
 - [ ] Firebase Android app, debug fingerprints, `google-services.json`
 - [ ] 👤 Upload key; register its fingerprints; signed `.aab`

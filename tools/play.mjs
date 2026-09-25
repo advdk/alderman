@@ -48,7 +48,9 @@ async function call(method, url, body, headers = {}) {
   if (!token) {
     if (process.env.PLAY_ACCESS_TOKEN) token = process.env.PLAY_ACCESS_TOKEN;
     else { const c = await auth.getClient(); token = (await c.getAccessToken()).token; quota = c.quotaProjectId; }   // user ADC needs a quota project
-    quota = process.env.PLAY_QUOTA_PROJECT || quota;
+    // quota project for user logins: PLAY_QUOTA_PROJECT, else the ADC file's, else the Firebase project in .firebaserc
+    let rc; try { rc = JSON.parse(readFileSync(join(root, '.firebaserc'), 'utf8')).projects.default; } catch {}
+    quota = process.env.PLAY_QUOTA_PROJECT || quota || (process.env.PLAY_ACCESS_TOKEN ? undefined : rc);
   }
   const res = await fetch(url, {
     method,
@@ -181,7 +183,7 @@ async function uploadImages(id, lang) {
     ['icon', ['store/icon-512.png']],
     ['featureGraphic', ['store/feature-graphic.png']],
     ['phoneScreenshots', readdirSync(join(root, 'store/screenshots')).filter(f => f.endsWith('.png')).sort()
-      .sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b)).map(f => `store/screenshots/${f}`)],
+      .sort((a, b) => rank(a) - rank(b)).map(f => `store/screenshots/${f}`)],
   ];
   for (const [type, files] of sets) {
     await call('DELETE', `${API}/edits/${id}/listings/${lang}/${type}`);
@@ -191,7 +193,9 @@ async function uploadImages(id, lang) {
     }
   }
 }
-const ORDER = ['1-title.png', '3-town.png', '4-market.png', '5-sea-chart.png', '6-fleet.png', '2-letter.png'];   // as in store/listing.md
+// Screenshot order on the store page: files listed in store/screenshots/order.txt (one per line) first, the rest alphabetically.
+const ORDER = (() => { try { return readFileSync(join(root, 'store/screenshots/order.txt'), 'utf8').split(/\r?\n/).map(s => s.trim()).filter(Boolean); } catch { return []; } })();
+const rank = f => { const i = ORDER.indexOf(f); return i < 0 ? 1000 : i; };
 async function listing() {
   const { listing: l, details: d } = readListing();
   const id = await edit.open();

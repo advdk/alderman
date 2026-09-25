@@ -8,7 +8,7 @@ import { doc, setDoc, getDoc, deleteDoc, serverTimestamp, Timestamp } from 'fire
 let env;
 const MIN = 60000;
 before(async () => {
-  env = await initializeTestEnvironment({ projectId: 'demo-alderman', firestore: { rules: readFileSync('firestore.rules', 'utf8') } });
+  env = await initializeTestEnvironment({ projectId: `demo-${JSON.parse(readFileSync('package.json', 'utf8')).name}`, firestore: { rules: readFileSync('firestore.rules', 'utf8') } });
 });
 after(() => env.cleanup());
 beforeEach(() => env.clearFirestore());

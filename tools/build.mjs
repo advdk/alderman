@@ -1,7 +1,7 @@
 // Release build: public/ -> www/ (served by Firebase Hosting and packed into the Android app).
 //  - copies the site
 //  - re-encodes music and stings to 96 kbps MP3 (cached in .cache/audio, so only changed files are redone)
-//  - stamps the version from package.json into index.html (<meta name="alderman-version">)
+//  - stamps the version from package.json into index.html (<meta name="<package name>-version">)
 // Usage: node tools/build.mjs            (needs ffmpeg: set FFMPEG=path, or `npm install` brings ffmpeg-static)
 import { cpSync, rmSync, mkdirSync, readFileSync, writeFileSync, statSync, existsSync, readdirSync, copyFileSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
@@ -26,7 +26,7 @@ cpSync(src, out, { recursive: true, filter: p => !/(^|[\\/])\./.test(relative(sr
 // version stamp
 const ver = `${pkg.version} (${pkg.androidVersionCode})`;
 const idx = join(out, 'index.html');
-writeFileSync(idx, readFileSync(idx, 'utf8').replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<meta name="alderman-version" content="${ver}">`));
+writeFileSync(idx, readFileSync(idx, 'utf8').replace('<meta charset="utf-8">', `<meta charset="utf-8">\n<meta name="${pkg.name}-version" content="${ver}">`));
 
 // audio
 const ff = await ffmpegPath();

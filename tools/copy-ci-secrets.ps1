@@ -1,5 +1,5 @@
 # Puts the GitHub Actions signing secrets on your clipboard, one at a time, so you can paste them into
-# GitHub -> advdk/alderman -> Settings -> Environments -> google-play -> Environment secrets.
+# GitHub -> <repo> -> Settings -> Environments -> google-play -> Environment secrets.
 # Nothing is printed or sent anywhere; run it yourself after tools\make-upload-key.ps1:
 #   powershell -ExecutionPolicy Bypass -File tools\copy-ci-secrets.ps1
 $ErrorActionPreference = 'Stop'

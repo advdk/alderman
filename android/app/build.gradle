@@ -2,10 +2,10 @@ apply plugin: 'com.android.application'
 import groovy.json.JsonSlurper
 
 // Version: package.json ("version" -> versionName, "androidVersionCode" -> versionCode).
-// CI overrides both from the git tag via ALDERMAN_VERSION_NAME / ALDERMAN_VERSION_CODE.
+// CI overrides both from the git tag via APP_VERSION_NAME / APP_VERSION_CODE (ALDERMAN_* also accepted).
 def pkg = new JsonSlurper().parse(file('../../package.json'))
-def versionNameValue = System.getenv('ALDERMAN_VERSION_NAME') ?: pkg.version
-def versionCodeValue = (System.getenv('ALDERMAN_VERSION_CODE') ?: "${pkg.androidVersionCode}") as int
+def versionNameValue = System.getenv('APP_VERSION_NAME') ?: System.getenv('ALDERMAN_VERSION_NAME') ?: pkg.version
+def versionCodeValue = (System.getenv('APP_VERSION_CODE') ?: System.getenv('ALDERMAN_VERSION_CODE') ?: "${pkg.androidVersionCode}") as int
 
 // Release signing, from either
 //  - android/keystore.properties (your PC, never committed; made by tools/make-upload-key.ps1), or
@@ -17,7 +17,7 @@ if (keystorePropsFile.exists()) { keystorePropsFile.withInputStream { keystorePr
 if (System.getenv('ANDROID_KEYSTORE_FILE')) {
     keystoreProps['storeFile'] = System.getenv('ANDROID_KEYSTORE_FILE')
     keystoreProps['storePassword'] = System.getenv('ANDROID_KEYSTORE_PASSWORD')
-    keystoreProps['keyAlias'] = System.getenv('ANDROID_KEY_ALIAS') ?: 'alderman-upload'
+    keystoreProps['keyAlias'] = System.getenv('ANDROID_KEY_ALIAS') ?: "${pkg.name}-upload"
     keystoreProps['keyPassword'] = System.getenv('ANDROID_KEY_PASSWORD') ?: System.getenv('ANDROID_KEYSTORE_PASSWORD')
 }
 
