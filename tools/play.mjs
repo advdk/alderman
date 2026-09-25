@@ -7,7 +7,7 @@
 //   node tools/play.mjs rollout --track production --fraction 0.5      (1 = complete the rollout)
 //   node tools/play.mjs halt    --track production                      (pause a staged rollout)
 //   node tools/play.mjs status                                          (show every track)
-//   node tools/play.mjs listing [--lang en-GB] [--images]               (store text from store/listing.md; --images also
+//   node tools/play.mjs listing [--lang en-GB] [--images] [--details]               (store text from store/listing.md; --images also
 //                                                                        replaces icon, feature graphic and phone screenshots)
 //
 // Credentials: Google Application Default Credentials. In GitHub Actions this is the keyless
@@ -194,7 +194,8 @@ async function listing() {
   try {
     const cur = await call('GET', `${API}/edits/${id}/details`);
     const lang = opt.lang || cur.defaultLanguage || 'en-GB';
-    await call('PUT', `${API}/edits/${id}/details`, { ...cur, contactEmail: d.contactEmail || cur.contactEmail, contactWebsite: d.contactWebsite || cur.contactWebsite });
+    // Contact details live under Store settings and need more Play permissions than the listing; opt in with --details.
+    if (opt.details) await call('PUT', `${API}/edits/${id}/details`, { ...cur, contactEmail: d.contactEmail || cur.contactEmail, contactWebsite: d.contactWebsite || cur.contactWebsite });
     await call('PUT', `${API}/edits/${id}/listings/${lang}`, { language: lang, ...l });
     console.log(`Listing ${lang}: "${l.title}" · short ${l.shortDescription.length}/80 · full ${l.fullDescription.length}/4000`);
     if (opt.images) await uploadImages(id, lang);
