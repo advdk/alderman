@@ -1,0 +1,142 @@
+# Build the signed Android App Bundle and upload it to Google Play.
+#
+#   Automatic:  git tag v1.2.3 && git push origin v1.2.3   ->  internal testing
+#   Manual:     Actions -> "Play release" -> Run workflow   ->  pick the track and status
+#
+# The tag sets the version: v1.2.3 -> versionName 1.2.3, versionCode 10203 (major*10000 + minor*100 + patch).
+# package.json "version" must match the tag, so the web build and the app agree.
+#
+# Needs (Settings -> Secrets and variables -> Actions):
+#   secrets  ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_PASSWORD
+#   vars     GCP_WORKLOAD_IDENTITY_PROVIDER, GCP_SERVICE_ACCOUNT   (keyless Google login, see RELEASE.md)
+name: Play release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      track:
+        description: Play track (alpha = closed testing, beta = open testing)
+        type: choice
+        options: [internal, alpha, beta]
+        default: internal
+      status:
+        description: "Release status (use draft until the app has been published once)"
+        type: choice
+        options: [completed, draft]
+        default: completed
+
+concurrency:
+  group: play-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write     # attach the .aab to the GitHub release
+  id-token: write     # keyless login to Google (Workload Identity Federation)
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: google-play
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Version from tag
+        id: ver
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then REF="$GITHUB_REF_NAME"; else REF="v$(node -p "require('./package.json').version")"; fi
+          if [[ ! "$REF" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then echo "::error::Version '$REF' is not vMAJOR.MINOR.PATCH"; exit 1; fi
+          MA=${BASH_REMATCH[1]} MI=${BASH_REMATCH[2]} PA=${BASH_REMATCH[3]}
+          if (( MI > 99 || PA > 99 )); then echo "::error::minor and patch must be below 100"; exit 1; fi
+          NAME="$MA.$MI.$PA"; CODE=$(( MA*10000 + MI*100 + PA ))
+          PKG=$(node -p "require('./package.json').version")
+          if [[ "$PKG" != "$NAME" ]]; then echo "::error::Tag $REF does not match package.json version $PKG. Bump package.json first."; exit 1; fi
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"; echo "code=$CODE" >> "$GITHUB_OUTPUT"
+          echo "Building Alderman $NAME (versionCode $CODE)" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Install
+        run: npm ci
+
+      - name: Build web and sync Android
+        env:
+          ALDERMAN_VERSION_NAME: ${{ steps.ver.outputs.name }}
+          ALDERMAN_VERSION_CODE: ${{ steps.ver.outputs.code }}
+        run: |
+          npm run build
+          npx cap sync android
+
+      - name: Restore the upload key
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then echo "::error::Secret ANDROID_KEYSTORE_BASE64 is missing"; exit 1; fi
+          echo "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/upload.jks"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Build signed bundle
+        working-directory: android
+        env:
+          ALDERMAN_VERSION_NAME: ${{ steps.ver.outputs.name }}
+          ALDERMAN_VERSION_CODE: ${{ steps.ver.outputs.code }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEY_ALIAS: alderman-upload
+        run: |
+          chmod +x gradlew
+          ./gradlew bundleRelease --no-daemon
+          mv app/build/outputs/bundle/release/app-release.aab "$GITHUB_WORKSPACE/alderman-${{ steps.ver.outputs.name }}.aab"
+
+      - name: Check the signature
+        run: |
+          jarsigner -verify "alderman-${{ steps.ver.outputs.name }}.aab" | tail -1
+          jarsigner -verify "alderman-${{ steps.ver.outputs.name }}.aab" | grep -q "jar verified"
+
+      - name: Remove the key from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks"
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: alderman-${{ steps.ver.outputs.name }}-aab
+          path: alderman-${{ steps.ver.outputs.name }}.aab
+          retention-days: 30
+
+      - name: Sign in to Google (keyless)
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Upload to Google Play
+        run: >
+          node tools/play.mjs upload
+          --aab "alderman-${{ steps.ver.outputs.name }}.aab"
+          --track "${{ inputs.track || 'internal' }}"
+          --status "${{ inputs.status || 'completed' }}"
+          --name "${{ steps.ver.outputs.name }}"
+          --notes store/whatsnew
+
+      - name: GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" "alderman-${{ steps.ver.outputs.name }}.aab"
+          --title "Alderman ${{ steps.ver.outputs.name }}"
+          --notes-file store/whatsnew/en-GB.txt
+          --verify-tag

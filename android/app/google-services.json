@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1088268196528",
+    "project_id": "alderman-2026",
+    "storage_bucket": "alderman-2026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088268196528:android:fc3e0c8f18febd21b53975",
+        "android_client_info": {
+          "package_name": "com.midnightsyntaxlabs.alderman"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1088268196528-jka4cu8bhcvvfbushf662p2l3kqh3mu6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.midnightsyntaxlabs.alderman",
+            "certificate_hash": "2309a28e12ac3581d199536de12bd5d4b3848da3"
+          }
+        },
+        {
+          "client_id": "1088268196528-jvolnm2eeslac3jgrkj03orid7i9qj62.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_tPrHJ1LVWCOw5vRi3fGFmzat1aq_hn0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1088268196528-jvolnm2eeslac3jgrkj03orid7i9qj62.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

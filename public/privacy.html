@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alderman · Privacy policy</title>
+<meta name="robots" content="index">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/fonts.css">
+<style>
+  :root{ --ink:#2b1c10; --soft:#63492f; --parch:#f1e3bd; --edge:#a4854f; --bg:#1c2a2c; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "EB Garamond",Garamond,Georgia,serif}
+  main{max-width:720px;margin:24px auto;padding:28px 22px 36px;background:radial-gradient(110% 80% at 40% 30%,#f1e3bd 50%,#dcc390 100%);
+    border-radius:4px;box-shadow:0 12px 36px #000b, inset 0 0 0 1px var(--edge)}
+  @media (max-width:760px){ main{margin:0;border-radius:0;min-height:100vh} }
+  h1{font-weight:400;font-size:34px;line-height:1.1;margin:0 0 4px}
+  h2{font-weight:500;font-size:21px;margin:26px 0 6px}
+  p,li{max-width:62ch}
+  .meta{color:var(--soft);font-style:italic;margin-top:0}
+  table{border-collapse:collapse;width:100%;font-size:15.5px;margin:8px 0}
+  th,td{text-align:left;vertical-align:top;padding:7px 8px;border-bottom:1px dashed rgba(99,73,47,.5)}
+  th{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);font-weight:500}
+  a{color:#7a2216}
+</style>
+</head>
+<body>
+<main>
+  <h1>Privacy policy</h1>
+  <p class="meta">Alderman: A Hanseatic Trading Tale · made by Midnight Syntax Labs · last updated 24 September 2026</p>
+
+  <p>Alderman is a slow trading game. We collect as little as possible: only what the game needs to keep your season safe and to run the season leaderboard. There are no ads, no analytics, no tracking and nothing is sold or shared for marketing.</p>
+
+  <h2>What we store, and why</h2>
+  <table>
+    <thead><tr><th>Data</th><th>Why</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>A random player ID created when you first play (anonymous sign-in)</td><td>To keep your cloud save and leaderboard entry apart from other players'</td><td>Google Firebase Authentication</td></tr>
+      <tr><td>Your Google account's email address, name and ID, <em>only if</em> you choose "Link Google account"</td><td>So you can recover your season on another device or after clearing the app</td><td>Google Firebase Authentication</td></tr>
+      <tr><td>Your game save (ships, goods, purse, game dates) and your list of finished seasons</td><td>Cloud copy of your season</td><td>Google Cloud Firestore (EU multi-region)</td></tr>
+      <tr><td>Your house name and season results (result, game day, fortune)</td><td>Shown publicly on the season leaderboard</td><td>Google Cloud Firestore (EU multi-region)</td></tr>
+      <tr><td>Settings and a local copy of your save</td><td>So the game works offline</td><td>Only on your device</td></tr>
+    </tbody>
+  </table>
+  <p>Notifications in the Android app are scheduled on your phone; no push service or notification token is used. Like any web service, Google's servers process your IP address and basic device information to deliver the data; we do not store it.</p>
+  <p>The house name you choose is public. Please do not put personal information in it.</p>
+
+  <h2>Who processes the data</h2>
+  <p>Firebase (Authentication, Cloud Firestore and Hosting) is provided by Google as our processor. See <a href="https://firebase.google.com/support/privacy" rel="noopener">Privacy and Security in Firebase</a>. Data is encrypted in transit (HTTPS) and at rest.</p>
+
+  <h2>How long we keep it</h2>
+  <p>Your cloud save and leaderboard entries stay until you delete them. Anonymous players who have not played for 12 months may be removed.</p>
+
+  <h2 id="delete">Delete your data</h2>
+  <p>In the game, open <b>Settings → Delete my data</b>. This removes your leaderboard entries, cloud save and sign-in, and the season on your device, at once.</p>
+  <p>If you can no longer open the game (for example, you uninstalled it), email <a href="mailto:andvidk@gmail.com?subject=Alderman%20data%20deletion">andvidk@gmail.com</a> with the subject "Alderman data deletion" and your house name, or the Google account you linked. We delete the data within 30 days and confirm by email.</p>
+
+  <h2>Your rights</h2>
+  <p>Under the GDPR you can ask to see, correct, export or delete your data, and you can complain to your data protection authority (in Denmark: Datatilsynet). The legal basis is performing the service you ask for (playing and saving the game) and, for the leaderboard, our legitimate interest in running a fair competition.</p>
+
+  <h2>Children</h2>
+  <p>Alderman is not directed at children under 13, and we do not knowingly collect data from them. If you believe a child has used a Google account with the game, contact us and we will delete the data.</p>
+
+  <h2>Changes and contact</h2>
+  <p>If this policy changes, the new version is posted here with a new date. Questions: <a href="mailto:andvidk@gmail.com">andvidk@gmail.com</a>.</p>
+</main>
+</body>
+</html>

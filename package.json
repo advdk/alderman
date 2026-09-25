@@ -1,0 +1,36 @@
+{
+  "name": "alderman",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Alderman: A Hanseatic Trading Tale",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "build:firebase": "esbuild tools/firebase-entry.js --bundle --format=esm --minify --target=es2020 --outfile=public/vendor/firebase.js",
+    "serve": "npm run build && firebase emulators:start --only hosting,auth,firestore",
+    "test:rules": "firebase emulators:exec --only firestore \"node --test tools/rules.test.mjs\"",
+    "deploy": "npm run build && firebase deploy --only hosting,firestore,auth",
+    "android:sync": "npm run build && npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:bundle": "npm run android:sync && cd android && gradlew.bat bundleRelease",
+    "android:apk-debug": "npm run android:sync && cd android && gradlew.bat assembleDebug",
+    "play": "node tools/play.mjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.0",
+    "esbuild": "^0.25.0",
+    "firebase": "^12.19.0",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/assets": "^3.0.5",
+    "ffmpeg-static": "^5.2.0",
+    "google-auth-library": "^11.1.0"
+  },
+  "androidVersionCode": 1,
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor-firebase/authentication": "^8.5.2"
+  }
+}

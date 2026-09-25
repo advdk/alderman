@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status bar icon for notifications: a cog under sail, white on transparent. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFFFF" android:pathData="M11.25,2h1.5v2.2l4.2,0.9l-4.2,0.9V7h4.4c0.7,2.6 0.7,5.4 0,8H12.75v1.6H11.25V15H6.85c-0.7,-2.6 -0.7,-5.4 0,-8h4.4z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M2.5,17h19l-2.6,4.2H5.1z"/>
+</vector>

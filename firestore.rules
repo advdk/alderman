@@ -1,0 +1,68 @@
+rules_version = '2';
+// Alderman: cloud saves and the season leaderboard.
+//
+//   users/{uid}/seasons/{season}   when the server first saw this season start (write once)
+//   users/{uid}/save/current       the player's cloud save (owner only)
+//   boards/{season}/entries/{uid}  one leaderboard row per player and season (public read)
+//
+// Anti-cheat: game time runs at most 4x real time (the fastest clock speed), one game day
+// being 5 real minutes. A row may not claim more game days than the server clock allows
+// since that season was registered, so winding the device clock forward gets rejected.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+
+    match /users/{uid}/seasons/{season} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['startedAt', 'seed'])
+        && request.resource.data.startedAt == request.time
+        && request.resource.data.seed is int;
+      allow update: if false;
+      allow delete: if isOwner(uid);          // "Delete my data" in Settings
+    }
+
+    match /users/{uid}/save/current {
+      allow read, delete: if isOwner(uid);
+      allow write: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['state', 'hall', 'v', 'savedAt', 'season', 'day', 'updatedAt'])
+        && request.resource.data.state is string && request.resource.data.state.size() < 900000
+        && request.resource.data.hall is string && request.resource.data.hall.size() < 50000
+        && request.resource.data.v is int
+        && request.resource.data.savedAt is int
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /boards/{season}/entries/{uid} {
+      allow read: if true;
+      allow create, update: if isOwner(uid) && validEntry(season, uid, request.resource.data);
+      allow delete: if isOwner(uid);
+    }
+
+    // Backstop for the house-name filter in game.js (which also handles letter swaps like 4 -> a).
+    function badWords() { return '.*(fuck|cunt|nigg|faggot|hitler|nazi|whore|rapist|hurensohn|fotze|wichser|arschloch|schlampe|fitta|kusse|perker|retard).*'; }
+
+    // 1 game day = 300,000 ms at 1x; at 4x a day passes every 75,000 ms of real time.
+    function maxDayMs() { return 75000; }
+
+    function validEntry(season, uid, e) {
+      let path = /databases/$(database)/documents/users/$(uid)/seasons/$(season);
+      let started = get(path).data.startedAt;
+      let elapsed = request.time.toMillis() - started.toMillis();
+      let won = e.wonDay != null;
+      return exists(path)
+        && e.keys().hasOnly(['house', 'result', 'wonDay', 'fortune', 'day', 'sortKey', 'updatedAt'])
+        && e.house is string && e.house.size() >= 2 && e.house.size() <= 32
+        && !e.house.lower().matches(badWords())
+        && e.result in ['won', 'bankrupt', 'ended']
+        && e.day is int && e.day >= 0
+        && e.day * maxDayMs() <= elapsed + maxDayMs()
+        && e.fortune is int && e.fortune >= 0 && e.fortune < 1000000000
+        && (!won || (e.wonDay is int && e.wonDay >= 1 && e.wonDay <= e.day + 1 && e.result == 'won'))
+        && e.sortKey == (won ? e.wonDay : 99999) * 1000000000 - e.fortune
+        && e.updatedAt == request.time;
+    }
+  }
+}

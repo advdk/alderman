@@ -1,0 +1,22 @@
+node_modules/
+.firebase/
+firebase-debug.log*
+*.log
+.DS_Store
+Thumbs.db
+www/
+.cache/
+firestore-debug.log
+ui-debug.log
+# Android
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/keystore.properties
+*.jks
+*.keystore
+# local leftovers
+Sound/
+*.pem
+play-service-account*.json

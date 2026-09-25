@@ -1,0 +1,70 @@
+# Move a tested build along the Play tracks, or steer a staged production rollout.
+# Actions -> "Play promote" -> Run workflow.
+#
+#   promote  internal -> alpha (closed testing) -> production (staged, e.g. 20 %)
+#   rollout  raise the production percentage; 100 completes the rollout
+#   halt     pause a staged rollout (e.g. crashes spike in Android vitals)
+#   status   list what is on each track
+name: Play promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [promote, rollout, halt, status]
+        default: promote
+      from:
+        description: promote from track
+        type: choice
+        options: [internal, alpha, beta]
+        default: internal
+      to:
+        description: promote to track (alpha = closed testing, beta = open testing), or the track to roll out / halt
+        type: choice
+        options: [alpha, beta, production]
+        default: production
+      percent:
+        description: users who get it on production (1-100)
+        default: '20'
+
+concurrency:
+  group: play-release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  play:
+    runs-on: ubuntu-latest
+    environment: google-play
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - name: ${{ inputs.action }}
+        shell: bash
+        env:
+          ACTION: ${{ inputs.action }}
+          FROM: ${{ inputs.from }}
+          TO: ${{ inputs.to }}
+          PERCENT: ${{ inputs.percent }}
+        run: |
+          if ! [[ "$PERCENT" =~ ^[0-9]+$ ]] || (( PERCENT < 1 || PERCENT > 100 )); then echo "::error::percent must be 1-100"; exit 1; fi
+          FRACTION=$(node -p "$PERCENT/100")
+          case "$ACTION" in
+            promote) node tools/play.mjs promote --from "$FROM" --to "$TO" --fraction "$FRACTION" ;;
+            rollout) node tools/play.mjs rollout --track "$TO" --fraction "$FRACTION" ;;
+            halt)    node tools/play.mjs halt --track "$TO" ;;
+            status)  node tools/play.mjs status ;;
+          esac
