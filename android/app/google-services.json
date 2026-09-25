@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1088268196528-j1q6tbfolu931gp2i76496tni87gadti.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.midnightsyntaxlabs.alderman",
+            "certificate_hash": "b5e2b454cb838bc1bcb711a9c20bf9c569797bdd"
+          }
+        },
+        {
           "client_id": "1088268196528-jka4cu8bhcvvfbushf662p2l3kqh3mu6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

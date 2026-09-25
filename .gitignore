@@ -20,3 +20,6 @@ android/keystore.properties
 Sound/
 *.pem
 play-service-account*.json
+release/
+*.aab
+*.apk
