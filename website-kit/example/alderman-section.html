@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alderman · example section</title>
+<!--
+  Reference only: one way to present Alderman on the company site.
+  Copy the <section class="alderman-feature"> and its <style>, or rebuild it in your own components.
+  Image paths are relative to this file (../images/...). No external fonts or scripts.
+-->
+<style>
+  body{margin:0;background:#101819;font:17px/1.55 Georgia,"Times New Roman",serif}
+  .alderman-feature{--sea:#1c2a2c;--brass:#d2a957;--parch:#ecdcb2;--ink:#2b1c10;
+    position:relative;overflow:hidden;color:var(--parch);background:var(--sea)}
+  .alderman-feature .af-hero{position:relative;min-height:min(78vh,720px);display:flex;align-items:center;
+    background:url(../images/banners/background-town-1920x1080.webp) 70% center/cover no-repeat}
+  .alderman-feature .af-hero::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,rgba(28,42,44,.97) 0%,rgba(28,42,44,.85) 38%,rgba(28,42,44,.15) 75%,rgba(28,42,44,0) 100%)}
+  .alderman-feature .af-copy{position:relative;max-width:560px;padding:56px 24px 56px clamp(24px,7vw,110px)}
+  .alderman-feature .af-logo{display:block;width:min(100%,460px);height:auto}
+  .alderman-feature .af-lead{font-size:1.2rem;margin:18px 0 8px}
+  .alderman-feature .af-meta{color:#c9ae74;font-style:italic;margin:0 0 24px}
+  .alderman-feature .af-actions{display:flex;flex-wrap:wrap;gap:12px}
+  .alderman-feature .af-btn{display:inline-flex;align-items:center;min-height:48px;padding:0 20px;border-radius:4px;
+    font:600 1rem/1 Georgia,serif;text-decoration:none;border:1px solid var(--brass)}
+  .alderman-feature .af-btn.primary{background:var(--brass);color:var(--ink)}
+  .alderman-feature .af-btn.ghost{color:var(--parch)}
+  .alderman-feature .af-btn:focus-visible{outline:2px solid var(--parch);outline-offset:2px}
+  .alderman-feature .af-features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px 32px;
+    max-width:1100px;margin:0 auto;padding:48px 24px 16px;list-style:none}
+  .alderman-feature .af-features b{display:block;color:var(--brass);font-weight:600;margin-bottom:4px}
+  .alderman-feature .af-shots{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:24px max(24px,calc((100% - 1100px)/2)) 56px}
+  .alderman-feature .af-shots img{flex:none;width:220px;height:auto;border-radius:10px;scroll-snap-align:start;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .alderman-feature .af-legal{max-width:1100px;margin:0 auto;padding:0 24px 32px;font-size:.85rem;color:#9fb3b1}
+  .alderman-feature .af-legal a{color:inherit}
+  @media (max-width:700px){
+    .alderman-feature .af-hero{min-height:auto;background-position:75% center}
+    .alderman-feature .af-hero::before{background:rgba(28,42,44,.82)}
+    .alderman-feature .af-copy{padding:40px 20px}
+  }
+</style>
+</head>
+<body>
+
+<section class="alderman-feature" aria-labelledby="alderman-title">
+  <div class="af-hero">
+    <div class="af-copy">
+      <h2 id="alderman-title" style="margin:0">
+        <img class="af-logo" src="../images/logo/alderman-lockup-light.svg" width="715" height="190" alt="Alderman: A Hanseatic Trading Tale">
+      </h2>
+      <p class="af-lead">Trade the medieval Baltic from Lübeck, 1370. Grow one cog into a fleet, win the trust of twelve Hanseatic towns, and be elected alderman.</p>
+      <p class="af-meta">A slow, calm trading game · Free · No ads</p>
+      <div class="af-actions">
+        <a class="af-btn primary" href="https://alderman-2026.web.app" rel="noopener">Play in your browser</a>
+        <!-- Replace with Google's official "Get it on Google Play" badge once the app is public:
+             https://play.google.com/intl/en_us/badges/  (use the badge as provided; do not redraw it) -->
+        <a class="af-btn ghost" href="https://play.google.com/store/apps/details?id=com.midnightsyntaxlabs.alderman" rel="noopener">Android: Google Play</a>
+      </div>
+    </div>
+  </div>
+
+  <ul class="af-features">
+    <li><b>Keeps its own pace</b>A day on the Baltic passes in about five minutes. Send a ship out and come back to news from your factor.</li>
+    <li><b>Real markets</b>Every barrel moves the price, and the market shows the true cost of a whole lot before you trade.</li>
+    <li><b>A living Hanse</b>Festivals, hard winters, great fires and herring shoals change what each town needs.</li>
+    <li><b>Season leaderboard</b>Everyone sails the same Baltic. Become alderman fastest, or build the richest house.</li>
+  </ul>
+
+  <div class="af-shots" role="list" aria-label="Screenshots">
+    <img role="listitem" src="../images/screenshots/phone/3-town-1080x1920.webp" width="1080" height="1920" loading="lazy" alt="The harbour of Lübeck with the tavern, market hall and the cog Adler">
+    <img role="listitem" src="../images/screenshots/phone/4-market-1080x1920.webp" width="1080" height="1920" loading="lazy" alt="The market hall in Lübeck showing the true price of a lot of ten barrels">
+    <img role="listitem" src="../images/screenshots/phone/5-sea-chart-1080x1920.webp" width="1080" height="1920" loading="lazy" alt="The sea chart of the Baltic and North Sea with the Hanseatic towns">
+    <img role="listitem" src="../images/screenshots/phone/6-fleet-1080x1920.webp" width="1080" height="1920" loading="lazy" alt="The fleet overview with the rival merchant houses">
+    <img role="listitem" src="../images/screenshots/phone/2-letter-1080x1920.webp" width="1080" height="1920" loading="lazy" alt="A letter from the factor welcoming the player to the Kontor in Lübeck">
+  </div>
+
+  <p class="af-legal">© 2026 Midnight Syntax Labs · <a href="../privacy/privacy-policy.html">Alderman privacy policy</a></p>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Alderman: A Hanseatic Trading Tale",
+  "alternateName": "Alderman",
+  "description": "A slow, calm trading game set in the Hanseatic League. Trade the medieval Baltic from Lübeck, 1370, and become alderman of the Hanse.",
+  "genre": ["Strategy", "Simulation"],
+  "gamePlatform": ["Web browser", "Android"],
+  "applicationCategory": "Game",
+  "operatingSystem": "Android, any modern web browser",
+  "author": { "@type": "Organization", "name": "Midnight Syntax Labs" },
+  "publisher": { "@type": "Organization", "name": "Midnight Syntax Labs" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "url": "https://alderman-2026.web.app",
+  "image": "social-share-1200x630.jpg",
+  "inLanguage": "en-GB"
+}
+</script>
+</body>
+</html>

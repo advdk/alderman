@@ -1,0 +1,220 @@
+{
+  "name": "Alderman: A Hanseatic Trading Tale",
+  "shortName": "Alderman",
+  "storeName": "Alderman: Hanseatic Trade",
+  "developer": "Midnight Syntax Labs",
+  "genre": [
+    "Strategy",
+    "Simulation",
+    "Trading"
+  ],
+  "setting": "Lübeck and the Baltic, 1370",
+  "tagline": "Trade the medieval Baltic from Lübeck, 1370.",
+  "shortDescription": "Trade the medieval Baltic from Lübeck, 1370. A slow, calm game of the Hanse.",
+  "description": "Lübeck, Anno Domini 1370. The Kontor is yours, and one cog lies at the quay. Alderman is a slow, calm trading game set in the towns of the Hanseatic League. Buy salt and beer where they are cheap, carry them across the Baltic, and sell where they are wanted. Grow a single ship into a fleet, win the trust of twelve towns from Bergen to Reval, and be elected alderman of the Hanse.",
+  "features": [
+    "A day on the Baltic passes in about five minutes; send a ship out and come back to news from your factor.",
+    "Real markets: every barrel moves the price, and the market shows the true cost of a whole lot before you trade.",
+    "Twelve Hanseatic towns and nine goods, with festivals, hard winters, fires, failed harvests and herring shoals.",
+    "Hire crews, order cogs and hulks, buy warehouses, hire managers and run trade routes while you sleep.",
+    "A season leaderboard: everyone sails the same Baltic; become alderman fastest or build the richest house.",
+    "No ads, no in-app purchases, no energy timers. Plays offline; optional cloud save with a Google account."
+  ],
+  "platforms": [
+    {
+      "platform": "Web browser",
+      "url": "https://alderman-2026.web.app",
+      "status": "live (test build)"
+    },
+    {
+      "platform": "Android (Google Play)",
+      "packageName": "com.midnightsyntaxlabs.alderman",
+      "url": "https://play.google.com/store/apps/details?id=com.midnightsyntaxlabs.alderman",
+      "status": "in internal testing; the link works once the app is public"
+    }
+  ],
+  "price": "Free",
+  "ageRating": "Target audience 13+ (content rating pending)",
+  "languages": [
+    "en-GB"
+  ],
+  "privacyPolicy": {
+    "currentUrl": "https://alderman-2026.web.app/privacy.html",
+    "deletionAnchor": "#delete",
+    "files": [
+      "privacy/privacy-policy.html",
+      "privacy/privacy-policy.md"
+    ]
+  },
+  "contact": "andvidk@gmail.com",
+  "brand": {
+    "colors": {
+      "sea": "#1c2a2c",
+      "wood": "#4d311c",
+      "brass": "#d2a957",
+      "parchment": "#ecdcb2",
+      "parchmentLight": "#f1e3bd",
+      "ink": "#2b1c10",
+      "sailRed": "#b2462f",
+      "pennantRed": "#c8402c",
+      "moss": "#4c6a2a"
+    },
+    "fonts": [
+      {
+        "family": "IM Fell English SC",
+        "use": "Titles, the wordmark",
+        "license": "SIL Open Font License 1.1",
+        "source": "https://fonts.google.com/specimen/IM+Fell+English+SC"
+      },
+      {
+        "family": "EB Garamond",
+        "use": "Body text, the subtitle (italic)",
+        "license": "SIL Open Font License 1.1",
+        "source": "https://fonts.google.com/specimen/EB+Garamond"
+      }
+    ]
+  },
+  "images": [
+    {
+      "file": "images/logo/alderman-lockup-light.png",
+      "width": 1430,
+      "height": 380,
+      "alt": "Alderman: A Hanseatic Trading Tale",
+      "use": "Logo with ship, for dark backgrounds (SVG alongside)"
+    },
+    {
+      "file": "images/logo/alderman-lockup-dark.png",
+      "width": 1430,
+      "height": 380,
+      "alt": "Alderman: A Hanseatic Trading Tale",
+      "use": "Logo with ship, for light backgrounds (SVG alongside)"
+    },
+    {
+      "file": "images/logo/alderman-wordmark-light.png",
+      "width": 1090,
+      "height": 380,
+      "alt": "Alderman",
+      "use": "Wordmark only, dark backgrounds (SVG alongside)"
+    },
+    {
+      "file": "images/logo/alderman-wordmark-dark.png",
+      "width": 1090,
+      "height": 380,
+      "alt": "Alderman",
+      "use": "Wordmark only, light backgrounds (SVG alongside)"
+    },
+    {
+      "file": "images/logo/alderman-emblem-1024.png",
+      "width": 1024,
+      "height": 857,
+      "alt": "A medieval cog under a red-striped sail",
+      "use": "Emblem on its own (SVG alongside)"
+    },
+    {
+      "file": "images/icon/alderman-icon-512.png",
+      "width": 512,
+      "height": 512,
+      "alt": "Alderman app icon",
+      "use": "App icon; also 1024, 192, 180 (Apple touch) and 32 px"
+    },
+    {
+      "file": "images/banners/hero-1920x1080.jpg",
+      "width": 1920,
+      "height": 1080,
+      "alt": "Alderman: the harbour of Lübeck in 1370, with the game logo",
+      "use": "Hero / page header (WebP alongside)"
+    },
+    {
+      "file": "images/banners/background-town-1920x1080.jpg",
+      "width": 1920,
+      "height": 1080,
+      "alt": "The harbour town of Lübeck, isometric view",
+      "use": "Background without text, for your own headline (WebP alongside)"
+    },
+    {
+      "file": "images/banners/social-share-1200x630.jpg",
+      "width": 1200,
+      "height": 630,
+      "alt": "Alderman: A Hanseatic Trading Tale",
+      "use": "Open Graph / social share image (WebP alongside)"
+    },
+    {
+      "file": "images/banners/google-play-feature-1024x500.png",
+      "width": 1024,
+      "height": 500,
+      "alt": "Alderman: A Hanseatic Trading Tale",
+      "use": "Google Play feature graphic; wide card"
+    },
+    {
+      "file": "images/screenshots/phone/1-title-1080x1920.png",
+      "width": 1080,
+      "height": 1920,
+      "alt": "Title screen with the Alderman logo",
+      "use": "Phone screenshot, portrait (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/phone/2-letter-1080x1920.png",
+      "width": 1080,
+      "height": 1920,
+      "alt": "A letter from the factor welcoming the player to the Kontor in Lübeck",
+      "use": "Phone screenshot, portrait (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/phone/3-town-1080x1920.png",
+      "width": 1080,
+      "height": 1920,
+      "alt": "The harbour of Lübeck with the tavern, market hall and the cog Adler",
+      "use": "Phone screenshot, portrait (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/phone/4-market-1080x1920.png",
+      "width": 1080,
+      "height": 1920,
+      "alt": "The market hall in Lübeck showing the true price of a lot of ten barrels",
+      "use": "Phone screenshot, portrait (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/phone/5-sea-chart-1080x1920.png",
+      "width": 1080,
+      "height": 1920,
+      "alt": "Alderman screenshot",
+      "use": "Phone screenshot, portrait (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/phone/6-fleet-1080x1920.png",
+      "width": 1080,
+      "height": 1920,
+      "alt": "The fleet overview with the rival merchant houses",
+      "use": "Phone screenshot, portrait (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/desktop/1-title-1920x1080.png",
+      "width": 1920,
+      "height": 1080,
+      "alt": "Title screen over the harbour of Lübeck",
+      "use": "Desktop browser screenshot (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/desktop/2-town-1920x1080.png",
+      "width": 1920,
+      "height": 1080,
+      "alt": "The harbour town of Lübeck",
+      "use": "Desktop browser screenshot (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/desktop/3-market-1920x1080.png",
+      "width": 1920,
+      "height": 1080,
+      "alt": "The market hall with lot prices",
+      "use": "Desktop browser screenshot (WebP alongside)"
+    },
+    {
+      "file": "images/screenshots/desktop/4-sea-chart-1920x1080.png",
+      "width": 1920,
+      "height": 1080,
+      "alt": "The sea chart of the Baltic",
+      "use": "Desktop browser screenshot (WebP alongside)"
+    }
+  ],
+  "copyright": "© 2026 Midnight Syntax Labs. Game art, logo and screenshots may be used to present Alderman on the company website and in press coverage."
+}
