@@ -25,35 +25,19 @@ Graphics are in this folder: `icon-512.png`, `feature-graphic.png`, `screenshots
 
 ## Full description (max 4,000)
 
-> Lübeck, Anno Domini 1370. The Kontor is yours, and one cog lies at the quay.
+> Lübeck, 1370. The Kontor is yours, and one cog lies at the quay.
 >
-> Alderman is a slow, calm trading game set in the towns of the Hanseatic League. Buy salt and beer where they are cheap, carry them across the Baltic, and sell where they are wanted. Grow a single ship into a fleet, win the trust of twelve towns from Bergen to Reval, and be elected alderman of the Hanse.
+> Alderman is a slow, calm trading game of the Hanseatic League. Buy salt and beer where they are cheap, carry them across the Baltic, and sell where they are wanted. Grow one ship into a fleet, win the trust of twelve towns from Bergen to Reval, and be elected alderman of the Hanse.
 >
-> A GAME THAT KEEPS ITS OWN PACE
-> A day on the Baltic passes in about five minutes of your time, and a voyage takes half an hour or so. Send a ship out, put the phone away, and come back to news from your factor. The world keeps turning while you are gone.
+> • A day passes in about five minutes. Send a ship out, put the phone away, and come back to news from your factor.
+> • Real markets: every barrel moves the price, and you see the true cost of a lot before you trade.
+> • Festivals, hard winters, fires and herring shoals change what each town needs.
+> • Hire crews, order new ships, buy warehouses and run trade routes while you sleep.
+> • Season leaderboard: everyone sails the same Baltic. Become alderman fastest, or build the richest house.
 >
-> REAL MARKETS
-> • Every barrel you buy raises the price, every barrel you sell lowers it — and the market shows you the true cost of a whole lot before you trade.
-> • Towns make some goods and want others: grain, herring, beer, salt, timber, cloth, iron, wine and furs.
-> • Church festivals, hard winters, great fires, failed harvests and herring shoals change what each town needs.
->
-> BUILD A TRADING HOUSE
-> • Hire sailors at the tavern — a fuller crew sails faster, but everyone is paid every day.
-> • Order snaikkas, cogs and hulks from the shipwrights.
-> • Buy warehouses, hire managers, and set up trade routes that run while you sleep.
-> • Rival merchant houses sail the same waters.
->
-> THE HALL OF FAME
-> Every season, every player sails the same Baltic. Become alderman faster than anyone else, or build the richest house, and see your name on the season leaderboard.
->
-> A HAND-MADE WORLD
-> The coastline is drawn from real maps of the Baltic and North Sea. Harbour towns change with the time of day and the weather, and the music follows you from the quay to the sea chart and into the winter.
->
-> • No ads. No in-app purchases. No energy timers.
-> • Plays offline; your season is copied to the cloud when you are online.
-> • Optional Google account link keeps your season safe across devices.
+> No ads. No in-app purchases. Plays offline.
 
-(about 2,050 characters)
+(880 characters)
 
 ## Release notes — version 1.0.0 (1)
 
