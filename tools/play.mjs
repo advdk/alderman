@@ -7,6 +7,8 @@
 //   node tools/play.mjs rollout --track production --fraction 0.5      (1 = complete the rollout)
 //   node tools/play.mjs halt    --track production                      (pause a staged rollout)
 //   node tools/play.mjs status                                          (show every track)
+//   node tools/play.mjs listing [--lang en-GB] [--images]               (store text from store/listing.md; --images also
+//                                                                        replaces icon, feature graphic and phone screenshots)
 //
 // Credentials: Google Application Default Credentials. In GitHub Actions this is the keyless
 // Workload Identity Federation login done by google-github-actions/auth (no JSON key is stored).
@@ -154,6 +156,54 @@ async function status() {
   } finally { await edit.abort(id); }
 }
 
-const commands = { upload, promote, rollout: () => rollout(false), halt: () => rollout(true), status };
+
+// ---------- store listing ----------
+// Reads store/listing.md: the app-details table (contact email, website), the name, short and full description.
+function readListing() {
+  const md = readFileSync(join(root, 'store/listing.md'), 'utf8');
+  const cell = label => { const m = md.match(new RegExp(`^\\|\\s*${label}[^|]*\\|\\s*(.+?)\\s*\\|\\s*$`, 'mi')); return m && m[1].replace(/\*\*/g, '').replace(/\s*\(\d+\)\s*$/, '').trim(); };
+  const quoteAfter = heading => { const i = md.indexOf(heading); if (i < 0) return null; const rest = md.slice(i + heading.length).split(/\n## /)[0];
+    return rest.split('\n').filter(l => l.startsWith('>')).map(l => l.replace(/^>\s?/, '')).join('\n').replace(/\n{3,}/g, '\n\n').trim(); };
+  const listing = { title: cell('App name'), shortDescription: quoteAfter('## Short description'), fullDescription: quoteAfter('## Full description') };
+  const details = { contactEmail: cell('Contact email'), contactWebsite: cell('Website') };
+  if (!listing.title || !listing.shortDescription || !listing.fullDescription) die('could not read name / short / full description from store/listing.md');
+  if (listing.title.length > 30) die(`app name is ${listing.title.length} characters; Play allows 30`);
+  if (listing.shortDescription.length > 80) die(`short description is ${listing.shortDescription.length} characters; Play allows 80`);
+  if (listing.fullDescription.length > 4000) die(`full description is ${listing.fullDescription.length} characters; Play allows 4000`);
+  return { listing, details };
+}
+async function uploadImages(id, lang) {
+  const sets = [
+    ['icon', ['store/icon-512.png']],
+    ['featureGraphic', ['store/feature-graphic.png']],
+    ['phoneScreenshots', readdirSync(join(root, 'store/screenshots')).filter(f => f.endsWith('.png')).sort()
+      .sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b)).map(f => `store/screenshots/${f}`)],
+  ];
+  for (const [type, files] of sets) {
+    await call('DELETE', `${API}/edits/${id}/listings/${lang}/${type}`);
+    for (const f of files) {
+      await call('POST', `${UPLOAD}/edits/${id}/listings/${lang}/${type}?uploadType=media`, readFileSync(join(root, f)), { 'Content-Type': 'image/png' });
+      console.log(`  ${type} ← ${f}`);
+    }
+  }
+}
+const ORDER = ['1-title.png', '3-town.png', '4-market.png', '5-sea-chart.png', '6-fleet.png', '2-letter.png'];   // as in store/listing.md
+async function listing() {
+  const { listing: l, details: d } = readListing();
+  const id = await edit.open();
+  try {
+    const cur = await call('GET', `${API}/edits/${id}/details`);
+    const lang = opt.lang || cur.defaultLanguage || 'en-GB';
+    await call('PUT', `${API}/edits/${id}/details`, { ...cur, contactEmail: d.contactEmail || cur.contactEmail, contactWebsite: d.contactWebsite || cur.contactWebsite });
+    await call('PUT', `${API}/edits/${id}/listings/${lang}`, { language: lang, ...l });
+    console.log(`Listing ${lang}: "${l.title}" · short ${l.shortDescription.length}/80 · full ${l.fullDescription.length}/4000`);
+    if (opt.images) await uploadImages(id, lang);
+    await edit.commit(id);          // for a published app Play queues this for review together with other changes
+    console.log('✔ store listing saved');
+    await summary(['### Google Play', `Store listing (${lang}) updated${opt.images ? ' with graphics' : ''}.`]);
+  } catch (e) { await edit.abort(id); throw e; }
+}
+
+const commands = { listing, upload, promote, rollout: () => rollout(false), halt: () => rollout(true), status };
 if (!commands[cmd]) die(`usage: node tools/play.mjs <${Object.keys(commands).join('|')}> [options]  (see the top of this file)`);
 commands[cmd]().catch(e => die(e.message));
