@@ -43,12 +43,16 @@ const fraction = f => { const n = Number(f); if (!(n > 0 && n <= 1)) die(`--frac
 
 // ---------- API ----------
 const auth = new GoogleAuth({ scopes: ['https://www.googleapis.com/auth/androidpublisher'] });
-let token;
+let token, quota;
 async function call(method, url, body, headers = {}) {
-  token = token || process.env.PLAY_ACCESS_TOKEN || (await (await auth.getClient()).getAccessToken()).token;
+  if (!token) {
+    if (process.env.PLAY_ACCESS_TOKEN) token = process.env.PLAY_ACCESS_TOKEN;
+    else { const c = await auth.getClient(); token = (await c.getAccessToken()).token; quota = c.quotaProjectId; }   // user ADC needs a quota project
+    quota = process.env.PLAY_QUOTA_PROJECT || quota;
+  }
   const res = await fetch(url, {
     method,
-    headers: { Authorization: `Bearer ${token}`, ...(body && !(body instanceof Buffer) ? { 'Content-Type': 'application/json' } : {}), ...headers },
+    headers: { Authorization: `Bearer ${token}`, ...(quota ? { 'x-goog-user-project': quota } : {}), ...(body && !(body instanceof Buffer) ? { 'Content-Type': 'application/json' } : {}), ...headers },
     body: body instanceof Buffer ? body : body ? JSON.stringify(body) : undefined,
   });
   const text = await res.text();
