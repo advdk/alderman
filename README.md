@@ -93,3 +93,8 @@ npx capacitor-assets generate --android   # regenerate icons/splash from assets/
 ```
 
 The Play checklist and status are in `RELEASE.md`. Store text and graphics are in `store/`.
+
+## CI/CD
+
+GitHub Actions publish to Google Play: push a tag `vX.Y.Z` → signed bundle → internal testing; the
+*Play promote* workflow moves it on to closed testing and production. Setup and day-to-day use: `RELEASE.md`.
