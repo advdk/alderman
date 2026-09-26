@@ -44,8 +44,12 @@
     },
   };
 
+  // Full screen: hide Android's navigation bar (a swipe from the edge shows it for a moment).
+  const immersive = () => { try{ P.SystemBars && P.SystemBars.hide({ bar:'NavigationBar' }); }catch(e){} };
+  immersive();
+
   if(App){
-    App.addListener('appStateChange', s => { try{ s.isActive ? window.koggeForeground && window.koggeForeground() : window.koggeBackground && window.koggeBackground(); }catch(e){} });
+    App.addListener('appStateChange', s => { try{ if(s.isActive) immersive(); s.isActive ? window.koggeForeground && window.koggeForeground() : window.koggeBackground && window.koggeBackground(); }catch(e){} });
     App.addListener('backButton', () => {
       const open = id => { const el = document.getElementById(id); return el && !el.hidden; };
       if(open('letterWrap') || open('dlgWrap')) document.dispatchEvent(new KeyboardEvent('keydown', { key:'Escape', bubbles:true }));

@@ -1,1 +1,1 @@
-The first voyage. Name your trading house, load the cog Adler and set sail from Lübeck.
+Tester feedback: full-width bars, speed control below the header, icons for goods, change course at sea, a town hall for standings, keep the screen on, and a quieter chronicle.

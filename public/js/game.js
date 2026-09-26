@@ -26,6 +26,20 @@ const GOODS = [
   {id:'iron', name:'Iron', base:120}, {id:'wine', name:'Wine', base:200}, {id:'furs', name:'Furs', base:320},
 ];
 const G = Object.fromEntries(GOODS.map(g=>[g.id,g]));
+
+/* Goods icons: small inline SVGs (24×24) so lists read at a glance. */
+const GOOD_ICON = {
+  grain:'<path d="M6 21c0-6 2-10 6-12 4 2 6 6 6 12z" fill="#c9a25a" stroke="#6b4a14"/><path d="M9 9c1-2 5-2 6 0" fill="none" stroke="#6b4a14"/><path d="M12 3v6M10 4l2 2 2-2M9.5 6.5l2.5 2 2.5-2" fill="none" stroke="#8a6a2e" stroke-width="1.2"/>',
+  fish:'<path d="M3 12c3-4 9-5 14-1l4-3v8l-4-3c-5 4-11 3-14-1z" fill="#9fb6bd" stroke="#3e5a60"/><circle cx="7.5" cy="11.2" r="1" fill="#1b2a2c"/><path d="M11 9.5c.8 1.6.8 3.4 0 5" fill="none" stroke="#3e5a60" stroke-width=".9"/>',
+  beer:'<rect x="5" y="6" width="11" height="14" rx="1.5" fill="#d9a441" stroke="#6b4a14"/><path d="M16 9h2.5a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H16" fill="none" stroke="#6b4a14" stroke-width="1.6"/><path d="M4.5 7c0-2 2-3 3.5-2 1-1.6 4-1.6 5 0 1.6-.6 3.5.3 3.5 2z" fill="#f4ecd8" stroke="#8a7a5a" stroke-width=".8"/><path d="M8 10v7M11 10v7M14 10v7" stroke="#b0802c" stroke-width=".9"/>',
+  salt:'<path d="M3 19h18l-2 2H5z" fill="#8a6a44" stroke="#4d311c"/><path d="M4 19c1-5 4-9 8-9s7 4 8 9z" fill="#f4f1ea" stroke="#9a9384"/><path d="M9 14l1 1M13 12l1 1M15 16l1 1M11 17l1 1" stroke="#c9c3b5"/>',
+  timber:'<rect x="3" y="12" width="18" height="8" rx="1" fill="#8a5a33" stroke="#4d311c"/><circle cx="7" cy="16" r="3" fill="#d6b27a" stroke="#4d311c"/><circle cx="7" cy="16" r="1" fill="none" stroke="#8a5a33" stroke-width=".7"/><rect x="6" y="5" width="15" height="7" rx="1" fill="#9a6a3f" stroke="#4d311c"/><circle cx="9.5" cy="8.5" r="2.6" fill="#d6b27a" stroke="#4d311c"/>',
+  cloth:'<path d="M4 7h12v11H4z" fill="#3f5a8a" stroke="#1f2f4a"/><ellipse cx="16" cy="12.5" rx="3" ry="5.5" fill="#5a78a8" stroke="#1f2f4a"/><ellipse cx="16" cy="12.5" rx="1" ry="2" fill="#1f2f4a"/><path d="M4 10h12M4 14h12" stroke="#c9a352" stroke-width=".9"/>',
+  iron:'<path d="M4 17l3-5h10l3 5z" fill="#7d858a" stroke="#34393c"/><path d="M6 12l2.5-4h7l2.5 4z" fill="#9aa3a8" stroke="#34393c"/><path d="M7 17h10" stroke="#5c6367"/>',
+  wine:'<path d="M10 3h4v4c2.5 1 3.5 3 3.5 6v7a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-7c0-3 1-5 3.5-6z" fill="#6a1f2a" stroke="#34101a"/><rect x="9.6" y="2" width="4.8" height="2.2" rx=".6" fill="#b0802c" stroke="#6b4a14" stroke-width=".7"/><rect x="8" y="12" width="8" height="5" rx=".6" fill="#ecdcb2"/>',
+  furs:'<path d="M12 3c2 0 3 1.5 3 3l3 1-1 3 3 2-3 1 1 4-3-1-1 5h-4l-1-5-3 1 1-4-3-1 3-2-1-3 3-1c0-1.5 1-3 3-3z" fill="#8a5a33" stroke="#3a2614"/><path d="M12 8v10" stroke="#5a3a1c" stroke-width="1" stroke-dasharray="1.5 1.5"/>',
+};
+const gi = (id, size=22) => `<svg class="gi" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" stroke-linejoin="round">${GOOD_ICON[id]||''}</svg>`;
 const CITIES = {
   LUB:{name:'Lübeck',   prod:['salt','beer','cloth'],  want:['furs','fish','iron']},
   HAM:{name:'Hamburg',  prod:['beer','wine','cloth'],  want:['grain','timber','fish']},
@@ -118,7 +132,7 @@ const SAVE_VERSION = 3;   // bump when the save format changes, and add a step t
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());   // the Android app
 const DEV = !NATIVE && (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) || new URLSearchParams(location.search).has('dev'));
 const VERSION = (document.querySelector('meta[name="alderman-version"]')||{}).content || 'dev';
-const PREF_DEFAULTS={music:true, sfx:true, notify:true, nArrive:true, nRoute:true, nNews:true, nMoney:true, nYard:true};
+const PREF_DEFAULTS={music:true, sfx:true, awake:false, notify:true, nArrive:true, nRoute:true, nNews:true, nMoney:true, nYard:true};
 const PREFS=(()=>{ try{ return Object.assign({},PREF_DEFAULTS,JSON.parse(localStorage.getItem(PREF_KEY)||'{}')); }catch(e){ return Object.assign({},PREF_DEFAULTS); } })();
 function savePrefs(){ try{ localStorage.setItem(PREF_KEY,JSON.stringify(PREFS)); }catch(e){} }
 const NOTIFY_CATS=[['nArrive','Arrivals','A ship you sent makes port'],['nRoute','Trade routes','A route completes a round, or pauses'],['nNews','Town news','Festivals, hard winters, your standing'],['nMoney','Money','Debt warnings and bankruptcy'],['nYard','Shipyard','A new ship is launched']];
@@ -222,6 +236,8 @@ const sellP = (cid,g) => Math.max(1, Math.round(midP(cid,g)*0.9));
 const used = sh => GOODS.reduce((a,g)=>a+sh.cargo[g.id],0);
 const selShip = () => S.ships[S.sel];
 
+// Routine things (trades, crew, loading, departures) are only toasted; the chronicle keeps what matters.
+function tell(msg){ if(typeof toast==='function' && !awayEvents) toast(msg); }
 function log(msg,quiet){ S.seq=(S.seq||0)+1; S.log.unshift({t:S.t,msg,n:S.seq}); if(S.log.length>40) S.log.length=40; dirty=true; if(!quiet && typeof toast==='function' && !awayEvents) toast(msg); }
 let awayWages=0;
 function dayTick(day){
@@ -274,7 +290,7 @@ function runManager(cid,sellOnly){
         w.cost[g.id]-=avg; w.cargo[g.id]--; S.purse+=p; st[g.id]++; S.press[cid][g.id]++; sd++; sm+=p; if(CITIES[cid].want.includes(g.id)) gainRep(cid,p/100); } }
   }
   if(bm) gainRep(cid,bm/100); if(sm) gainRep(cid,sm/100);
-  if(b||sd){ log(`${m.name} in ${CITIES[cid].name}: ${b?`bought ${b} barrels for ${fmt(bm)} mk`:''}${b&&sd?', ':''}${sd?`sold ${sd} for ${fmt(sm)} mk`:''}`,true);
+  if(b||sd){ void 0;
     if(awayEvents){ const a=awayMgr[cid]||(awayMgr[cid]={b:0,bm:0,s:0,sm:0}); a.b+=b; a.bm+=bm; a.s+=sd; a.sm+=sm; } }
 }
 function defaultRules(cid){ const c=CITIES[cid], R={};
@@ -317,7 +333,7 @@ const rivalSpeed=rs=>SHIPTYPES[rs.type].speed*0.9;
 function rivalSell(R,rs){ const cid=rs.at, st=S.stock[cid], sold={};
   for(const g of GOODS){ let n=0,sum=0; while(rs.cargo[g.id]>0){ const p=sellP(cid,g.id); rs.cargo[g.id]--; rs.cost[g.id]=0; st[g.id]++; S.press[cid][g.id]++; R.purse+=p; sum+=p; n++; }
     if(n) sold[g.id]={n,sum}; }
-  for(const g in sold) if(neededIn(cid).has(g) && sold[g].n>=12) log(`News: the house of ${R.name.split(' ').pop()} brought ${sold[g].n} ${G[g].name.toLowerCase()} to ${CITIES[cid].name}`,true);
+  for(const g in sold) if(neededIn(cid).has(g) && sold[g].n>=12) void 0;
 }
 function rivalDepart(R,rs,k){
   const here=rs.at, cap=SHIPTYPES[rs.type].cap, rnd=mulberry32(Math.floor(S.t*97)+hs(R.id)*13+k*7), opts=[];
@@ -359,15 +375,62 @@ function advanceTo(T){
     S.t=nxt; if(nxt===dayB) dayTick(dayB);
   }
 }
+
+/* Change course at sea. The new path starts where the ship is: it may turn back along its track
+   (towards its port of departure) or carry on (towards its old destination), then cut across open
+   water to the best point on the known lane to the new port. Straight legs are checked against land. */
+// Land as a bitmap (half the chart resolution), drawn once from the coastline polygons: fast to test.
+let LANDMASK=null; const LM=2;
+function landMask(){ if(LANDMASK) return LANDMASK;
+  const w=Math.ceil(W/LM), h=Math.ceil(H/LM), cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+  const g=cv.getContext('2d',{willReadFrequently:true}); g.fillStyle='#000';
+  for(const poly of LAND){ g.beginPath(); poly.forEach(([x,y],i)=>i?g.lineTo(x/LM,y/LM):g.moveTo(x/LM,y/LM)); g.closePath(); g.fill(); }
+  const d=g.getImageData(0,0,w,h).data, m=new Uint8Array(w*h); for(let i=0;i<m.length;i++) m[i]=d[i*4+3]>127?1:0;
+  return LANDMASK={m,w,h}; }
+const landAt=(x,y)=>{ const L=landMask(), X=x/LM|0, Y=y/LM|0; return X>=0&&Y>=0&&X<L.w&&Y<L.h&&L.m[Y*L.w+X]===1; };
+function seaClear(a,b){ const L=Math.hypot(b[0]-a[0],b[1]-a[1]); if(L<1) return true;
+  const n=Math.ceil(L/1.5); for(let k=1;k<n;k++){ const t=k/n; if(landAt(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t)) return false; } return true; }
+function pathLen(P){ let l=0; for(let i=1;i<P.length;i++) l+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]); return l; }
+function redirectPath(sh,to){
+  const v=sh.voy, A=v.path, p=shipPos(sh), here=[p.x,p.y];
+  let d=(S.t-v.t0)*voySpeed(sh), k=0;                     // k: last vertex of A already passed
+  for(let i=1;i<A.length;i++){ const l=Math.hypot(A[i][0]-A[i-1][0],A[i][1]-A[i-1][1]); if(d<=l){ k=i-1; break; } d-=l; k=i; }
+  const chains=[];                                          // [points from here, cost so far]
+  { let pts=[here], c=0; chains.push([pts.slice(),c]); for(let i=k;i>=0;i--){ c+=Math.hypot(A[i][0]-pts[pts.length-1][0],A[i][1]-pts[pts.length-1][1]); pts.push(A[i]); chains.push([pts.slice(),c]); } }
+  { let pts=[here], c=0; for(let i=k+1;i<A.length;i++){ c+=Math.hypot(A[i][0]-pts[pts.length-1][0],A[i][1]-pts[pts.length-1][1]); pts.push(A[i]); chains.push([pts.slice(),c]); } }
+  const lanes=[v.from===to ? [A[0]] : route(v.from,to).path];   // turning back home is just the way we came
+  if(v.to!==to) lanes.push(route(v.to,to).path);
+  const cand=[];
+  for(const B of lanes){ const rem=new Array(B.length); rem[B.length-1]=0; for(let j=B.length-2;j>=0;j--) rem[j]=rem[j+1]+Math.hypot(B[j+1][0]-B[j][0],B[j+1][1]-B[j][1]);
+    for(const [pts,c] of chains){ const P=pts[pts.length-1]; for(let j=0;j<B.length;j++) cand.push({pts,B,j,cost:c+Math.hypot(B[j][0]-P[0],B[j][1]-P[1])+rem[j]}); } }
+  cand.sort((a,b)=>a.cost-b.cost);
+  for(const c of cand){ const P=c.pts[c.pts.length-1]; if(!seaClear(P,c.B[c.j])) continue;
+    const path=c.pts.concat(c.B.slice(c.j)).filter((q,i,arr)=>i===0||Math.hypot(q[0]-arr[i-1][0],q[1]-arr[i-1][1])>.01);
+    return {path,len:pathLen(path)}; }
+  return null;
+}
+function redirect(idx,to){
+  const sh=S.ships[idx]; if(!sh||!sh.voy||isFollower(sh)) return false;
+  if(sh.voy.to===to){ toast(`The ${unitName(idx)} is already bound for ${CITIES[to].name}.`); return false; }
+  const r=redirectPath(sh,to); if(!r){ toast(`No clear water to ${CITIES[to].name} from here.`); return false; }
+  if(sh.route && sh.route.on){ sh.route.on=false; }
+  const sp=voySpeed(sh), from=sh.voy.from;
+  for(const m of unitShips(idx)) m.voy={from,to,path:r.path,len:r.len,t0:S.t,speed:sp};
+  tell(`The ${unitName(idx)} changed course for ${CITIES[to].name}`);
+  pendingSail=null; dirty=true;
+  if(!SIM && !awayEvents){ save(); if(scene) scene.onSail(sh); }
+  return true;
+}
 function sail(idx,to,auto){
+  if(!auto && S.ships[idx] && S.ships[idx].voy) return redirect(idx,to);
   const sh=S.ships[idx]; if(!sh||sh.voy||!sh.at||sh.at===to||isFollower(sh)) return false;
   const mem=unitShips(idx), weak=mem.find(m=>m.crew<SHIPTYPES[m.type].minCrew);
   if(weak){ if(!SIM&&!auto) toast(`The ${weak.name} needs at least ${SHIPTYPES[weak.type].minCrew} sailors. Hire them at the tavern.`); return false; }
-  if(!auto && sh.route && sh.route.on){ sh.route.on=false; log(`The ${unitName(idx)} left its trade route to sail on your orders`,true); }
+  if(!auto && sh.route && sh.route.on){ sh.route.on=false; void 0; }
   const r=route(sh.at,to), sp=unitSpeed(idx), from=sh.at;
-  if((from+to==='LUBHAM'||from+to==='HAMLUB')){ const toll=TOLL*mem.length; S.purse=Math.max(0,S.purse-toll); if(!auto) log(`Paid ${toll} mk toll for the Stecknitz canal`,true); }
+  if((from+to==='LUBHAM'||from+to==='HAMLUB')){ const toll=TOLL*mem.length; S.purse=Math.max(0,S.purse-toll); if(!auto) void 0; }
   for(const m of mem){ m.voy={from,to,path:r.path,len:r.len,t0:S.t,speed:sp}; m.at=null; }
-  if(!auto) log(`The ${unitName(idx)} weighed anchor for ${CITIES[to].name}`);
+  if(!auto) tell(`The ${unitName(idx)} weighed anchor for ${CITIES[to].name}`);
   if(!auto) pendingSail=null; dirty=true;
   if(!SIM && !awayEvents){ save(); if(scene) scene.onSail(sh); }
   return true;
@@ -379,14 +442,14 @@ function routeWork(sh){   // at a stop: unload into the warehouse, then load fro
   for(const g of GOODS){ if(!(stop.unloadAll||stop.unload.includes(g.id))||stop.load.includes(g.id)) continue; un+=moveGoods(h,w,g.id,1e6); }
   let progress=true;
   while(progress && h.used()<h.cap){ progress=false; for(const g of stop.load){ if(moveGoods(w,h,g,1)){ ld++; progress=true; } } }
-  if(un||ld) log(`${unitName(i)} at ${CITIES[stop.c].name}: ${un?`unloaded ${un}`:''}${un&&ld?', ':''}${ld?`loaded ${ld}`:''} barrels`,true);
+  if(un||ld) void 0;
 }
 function routeContinue(sh){
   const r=sh.route; if(!r||!r.on||r.stops.length<2) return;
   const idx=S.ships.indexOf(sh);
   if(sh.at===r.stops[r.i].c){ routeWork(sh); r.i=(r.i+1)%r.stops.length;
     if(r.i===0){ const nm=unitName(idx), way=r.stops.map(st=>CITIES[st.c].name).join(' → ');
-      log(`The ${nm} completed a round of its trade route`,true); note('routeRound',`${nm}: round completed`,`The ${nm} has completed a round of its trade route (${way}) and sets out again.`); } }
+      void 0; note('routeRound',`${nm}: round completed`,`The ${nm} has completed a round of its trade route (${way}) and sets out again.`); } }
   const next=r.stops[r.i].c;
   if(next===sh.at){ r.i=(r.i+1)%r.stops.length; }
   if(!sail(idx,r.stops[r.i].c,true)){
@@ -460,7 +523,7 @@ function renderHeader(){
   if(view==='town'){ $('vLabel').textContent='Sea chart'; tg.disabled=false; $('vIcon').innerHTML=ICON_CHART; }
   else { const c=(townAt&&shipsIn(townAt).length)?townAt:selShip().at; $('vLabel').textContent=c?CITIES[c].name:'Town'; tg.disabled=!c; $('vIcon').innerHTML=ICON_TOWN; }
   const hint=$('hint');
-  if(pendingSail!==null){ hint.hidden=false; hint.innerHTML=`<span>Tap a port for the ${unitName(pendingSail)}</span><button data-act="cancelplan">Cancel</button>`; }
+  if(pendingSail!==null){ hint.hidden=false; hint.innerHTML=`<span>${S.ships[pendingSail]&&S.ships[pendingSail].voy?'New course: tap a port for':'Tap a port for'} the ${unitName(pendingSail)}</span><button data-act="cancelplan">Cancel</button>`; }
   else hint.hidden=true;
 }
 function logList(n){ const seen=S.seenShown||0; return `<ol class="log">${S.log.slice(0,n).map(l=>`<li class="${(l.n||0)>seen?'new':''}"><em>${shortDate(l.t)}</em>${l.msg}</li>`).join('')||'<li>No entries yet.</li>'}</ol>`; }
@@ -477,9 +540,24 @@ function openDlg(kind,arg){ if(dlg && kind!==dlg.kind && (dlg.kind==='house' || 
   if(kind==='tavern'){ const here=shipsIn(arg); dlg.ship = here.some(o=>o.i===S.sel)?S.sel:(here[0]?.i??-1); }
   if(kind==='chron'){ S.seenShown=S.seen||0; S.seen=S.seq||0; save(); }
   $('dlgWrap').hidden=false; renderDlg(); renderHeader(); setTimeout(()=>$('dlgX').focus(),0); }
+
+/* Keep the screen on (Settings). The Android app uses the KeepAwake plugin; browsers the Screen Wake Lock API,
+   which is released whenever the page is hidden, so it is asked for again on return. */
+let wakeLock=null;
+async function applyAwake(){
+  const on=!!PREFS.awake && !document.hidden, KA=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.KeepAwake;
+  try{
+    if(NATIVE && KA){ if(on) await KA.keepAwake(); else await KA.allowSleep(); return; }
+    if(!('wakeLock' in navigator)) return;
+    if(on && !wakeLock){ wakeLock=await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release',()=>{ wakeLock=null; }); }
+    else if(!on && wakeLock){ const w=wakeLock; wakeLock=null; await w.release(); }
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',applyAwake);
+const overlayOpen = () => !$('dlgWrap').hidden || !$('letterWrap').hidden || !$('title').hidden;
 function closeDlg(){ if(dlg&&((dlg.kind==='end'&&dlg.arg==='bankrupt')||dlg.kind==='house')) return; $('dlgX').hidden=false; dlg=null; $('dlgWrap').hidden=true; renderHeader(); }
 function renderDlg(){
-  if(!dlg) return; $('dlg').classList.toggle('frozen',!!S.paused && !['settings','hall','end','chron','house'].includes(dlg.kind)); const body=$('dlgBody'), box=$('dlg'); box.classList.toggle('narrow', ['ship','settings','tavern','yard','house'].includes(dlg.kind)||(dlg.kind==='wh'&&!S.wh[dlg.arg]));
+  if(!dlg) return; $('dlg').classList.toggle('frozen',!!S.paused && !['settings','hall','end','chron','house','rathaus'].includes(dlg.kind)); const body=$('dlgBody'), box=$('dlg'); box.classList.toggle('narrow', ['ship','settings','tavern','yard','house'].includes(dlg.kind)||(dlg.kind==='wh'&&!S.wh[dlg.arg]));
   if(dlg.kind==='market'){
     const cid=dlg.arg, here=CITIES[cid]; const sh=holdOf(dlg.ship,cid);
     const valid = !!sh;
@@ -498,7 +576,7 @@ function renderDlg(){
       const tag=(need.has(g.id)?'<span class="chip need">needed now</span>':'')+(here.prod.includes(g.id)?'<span class="chip made">made</span>':here.want.includes(g.id)?'<span class="chip want">wanted</span>':'');
       const cls=held?(qs.avg>avg?'gain':qs.avg<avg?'loss':''):'';
       const canBuy=valid&&!full&&qb.n>0;
-      return `<li class="good"><div class="gname"><b>${g.name}</b>${tag}<small>${Math.floor(S.stock[cid][g.id])} in town${trendHtml(cid,g.id)}${held?` · <span class="aboard">${held} aboard</span>, paid ${avg}`:''}</small></div>
+      return `<li class="good"><div class="gname">${gi(g.id)}<b>${g.name}</b>${tag}<small>${Math.floor(S.stock[cid][g.id])} in town${trendHtml(cid,g.id)}${held?` · <span class="aboard">${held} aboard</span>, paid ${avg}`:''}</small></div>
         ${pxHtml('buy',g,qb,!canBuy)}
         ${pxHtml('sell',g,qs,!held,cls)}</li>`}).join('');
     const lots=[1,5,10,'max'].map(q=>`<button data-act="qty" data-q="${q}" aria-pressed="${S.qty===q}">${q==='max'?'Max':q}</button>`).join('');
@@ -520,7 +598,7 @@ function renderDlg(){
     body.innerHTML=`<div><span class="eyebrow">Convoy · ${mem.length} ships · ${h.cap} barrels</span><h2 id="dlgTitle">${unitName(i)}</h2><p class="note">${statusOf(lead,i)} The convoy sails at the pace of its slowest ship${sp?` (${Math.round(sp)} leagues a day)`:''}, and trades as one hold.</p></div>
       ${lead.voy?`<div class="holdbar"><i style="width:${pct}%"></i></div>`:''}
       <ul class="fleet">${mem.map(({s:m,i:k})=>`<li><div class="top"><strong>${m.name}</strong><span class="type">${SHIPTYPES[m.type].name}${k===i?' · leads':''} · ${used(m)} / ${SHIPTYPES[m.type].cap}</span></div>${crewHtml(m)}${docked&&mem.length>2&&k!==i?`<div class="row"><button class="btn ghost" data-act="cleave" data-i="${k}">Leave the convoy</button></div>`:''}</li>`).join('')}</ul>
-      <div><span class="eyebrow">In the holds · ${h.used()} / ${h.cap}</span>${held.length?`<ul class="cargo">${held.map(g=>`<li><span>${g.name}</span><span>${h.qty(g.id)}</span></li>`).join('')}</ul>`:'<p class="note">The holds are empty.</p>'}</div>
+      <div><span class="eyebrow">In the holds · ${h.used()} / ${h.cap}</span>${held.length?`<ul class="cargo">${held.map(g=>`<li><span>${gi(g.id,18)}${g.name}</span><span>${h.qty(g.id)}</span></li>`).join('')}</ul>`:'<p class="note">The holds are empty.</p>'}</div>
       ${free.length?`<div><span class="eyebrow">Add to the convoy</span><div class="row" style="margin-top:6px">${free.map(o=>`<button class="btn ghost" data-act="cjoin" data-i="${o.i}" data-j="${i}">+ ${o.s.name}</button>`).join('')}</div></div>`:''}
       <div class="row"><button class="btn ghost" data-act="route" data-i="${i}">Trade route</button>${docked?`<button class="btn" data-act="plan" data-i="${i}">Set sail…</button><button class="btn ghost" data-act="market" data-c="${lead.at}">Market</button>`:''}${docked&&view!=='town'?`<button class="btn ghost" data-act="town" data-c="${lead.at}">Enter ${CITIES[lead.at].name}</button>`:''}</div>
       ${docked?`<div class="danger"><button class="btn ghost" data-act="cdisband" data-i="${i}">Disband the convoy</button><span>Each ship keeps its own cargo.</span></div>`:''}`;
@@ -535,11 +613,19 @@ function renderDlg(){
       ${sh.voy?`<div class="holdbar" aria-label="Voyage progress"><i style="width:${pct}%"></i></div>`:''}
       ${crewHtml(sh)}
       <div><span class="eyebrow">In the hold · ${u} / ${T.cap}</span>
-      ${held.length?`<ul class="cargo">${held.map(g=>`<li><span>${g.name}</span><span>${sh.cargo[g.id]}</span></li>`).join('')}</ul>`:'<p class="note">The hold is empty.</p>'}</div>
+      ${held.length?`<ul class="cargo">${held.map(g=>`<li><span>${gi(g.id,18)}${g.name}</span><span>${sh.cargo[g.id]}</span></li>`).join('')}</ul>`:'<p class="note">The hold is empty.</p>'}</div>
       <div class="row"><button class="btn ghost" data-act="route" data-i="${i}">Trade route</button>${sh.at?`<button class="btn" data-act="plan" data-i="${i}" ${sh.crew<T.minCrew?'disabled':''}>Set sail…</button><button class="btn ghost" data-act="tavern" data-c="${sh.at}">Tavern</button><button class="btn ghost" data-act="market" data-c="${sh.at}">Market</button>`:''}
         ${sh.at&&view!=='town'?`<button class="btn ghost" data-act="town" data-c="${sh.at}">Enter ${CITIES[sh.at].name}</button>`:''}
+        ${sh.voy&&!isFollower(sh)?`<button class="btn" data-act="plan" data-i="${i}">Change course…</button>`:''}
         ${sh.voy&&view==='town'?`<button class="btn ghost" data-act="chart">Show on the chart</button>`:''}</div>
       ${partners.length?`<div><span class="eyebrow">Sail together</span><p class="note">Join ships in the same port into a convoy: one hold to trade with, one order to sail.</p><div class="row" style="margin-top:6px">${[...new Set(partners.map(o=>leadOf(o.i)))].map(k=>`<button class="btn ghost" data-act="cjoin" data-i="${i}" data-j="${k}">Convoy with ${inConvoy(S.ships[k])?'the '+unitName(k):'the '+S.ships[k].name}</button>`).join('')}</div></div>`:''}`;
+    return;
+  }
+  if(dlg.kind==='rathaus'){
+    const cid=dlg.arg, here=CITIES[cid];
+    body.innerHTML=`<div><span class="eyebrow">Town hall</span><h2 id="dlgTitle">The Rathaus of ${here.name}</h2><p class="note">The council keeps the rolls of the Hanse: who trades, who prospers, and who might one day sit among the aldermen.</p></div>
+      ${standingHtml(cid)}${goalsHtml()}${rankingHtml()}
+      <div class="row"><button class="btn ghost" data-act="hall">Hall of fame</button></div>`;
     return;
   }
   if(dlg.kind==='fleet'){
@@ -549,11 +635,11 @@ function renderDlg(){
       if(isFollower(s)) return '';
       if(inConvoy(s)){ const h=unitHold(i); return `<li><div class="top"><strong>${unitName(i)}</strong><span class="type">Convoy · ${h.used()} / ${h.cap} barrels</span></div>
         <div class="type">${convMembers(s.conv).map(o=>o.s.name).join(' · ')}</div><div>${statusOf(s,i)}</div>
-        <div class="row"><button class="btn" data-act="openconv" data-i="${i}">Convoy…</button><button class="btn ghost" data-act="route" data-i="${i}">Trade route</button>${s.at?`<button class="btn ghost" data-act="plan" data-i="${i}">Set sail…</button>`:`<button class="btn ghost" data-act="chart" data-i="${i}">Show on the chart</button>`}</div></li>`; }
+        <div class="row"><button class="btn" data-act="openconv" data-i="${i}">Convoy…</button><button class="btn ghost" data-act="route" data-i="${i}">Trade route</button>${s.at?`<button class="btn ghost" data-act="plan" data-i="${i}">Set sail…</button>`:`<button class="btn ghost" data-act="plan" data-i="${i}">Change course…</button><button class="btn ghost" data-act="chart" data-i="${i}">Show on the chart</button>`}</div></li>`; }
       return `<li><div class="top"><strong>${s.name}</strong><span class="type">${T.name} · ${used(s)} / ${T.cap} barrels</span></div>
       <div>${statusOf(s,i)}</div>${crewHtml(s)}<div class="row"><button class="btn ghost" data-act="route" data-i="${i}">Trade route</button></div>
-      <div class="row">${s.at?`<button class="btn" data-act="plan" data-i="${i}">Set sail…</button>${view==='town'&&townAt===s.at?'':`<button class="btn ghost" data-act="town" data-c="${s.at}">Enter ${CITIES[s.at].name}</button>`}`:`<button class="btn ghost" data-act="chart" data-i="${i}">Show on the chart</button>`}</div></li>`}).join('')}</ul>
-    ${goalsHtml()}${rankingHtml()}`;
+      <div class="row">${s.at?`<button class="btn" data-act="plan" data-i="${i}">Set sail…</button>${view==='town'&&townAt===s.at?'':`<button class="btn ghost" data-act="town" data-c="${s.at}">Enter ${CITIES[s.at].name}</button>`}`:`<button class="btn" data-act="plan" data-i="${i}">Change course…</button><button class="btn ghost" data-act="chart" data-i="${i}">Show on the chart</button>`}</div></li>`}).join('')}</ul>
+    <p class="note small">Your path to alderman and the standing of the merchant houses are kept at the town hall.</p>`;
     return;
   }
   if(dlg.kind==='route'){
@@ -561,8 +647,8 @@ function renderDlg(){
     const whTowns=Object.keys(S.wh).filter(c=>CITIES[c]);
     const chip=(act,k,g,on,label)=>`<button class="chipbtn" data-act="${act}" data-k="${k}" data-g="${g}" aria-pressed="${on}">${label}</button>`;
     const stops=r.stops.map((st,k)=>`<li class="stop${r.on&&r.i===k?' cur':''}"><div class="stophead"><b>${k+1} · ${CITIES[st.c].name}</b>${!S.wh[st.c]?'<small>no warehouse</small>':''}<button class="linkbtn" data-act="rdel" data-k="${k}" aria-label="Remove ${CITIES[st.c].name}">Remove</button></div>
-      <div class="chiprow"><span>Unload</span>${chip('runall',k,'',st.unloadAll,'Everything')}${st.unloadAll?'':GOODS.map(g=>chip('run',k,g.id,st.unload.includes(g.id),g.name)).join('')}</div>
-      <div class="chiprow"><span>Load</span>${GOODS.map(g=>chip('rld',k,g.id,st.load.includes(g.id),g.name)).join('')}</div></li>`).join('');
+      <div class="chiprow"><span>Unload</span>${chip('runall',k,'',st.unloadAll,'Everything')}${st.unloadAll?'':GOODS.map(g=>chip('run',k,g.id,st.unload.includes(g.id),gi(g.id,16)+g.name)).join('')}</div>
+      <div class="chiprow"><span>Load</span>${GOODS.map(g=>chip('rld',k,g.id,st.load.includes(g.id),gi(g.id,16)+g.name)).join('')}</div></li>`).join('');
     const last=r.stops[r.stops.length-1]?.c;
     const adds=whTowns.filter(c=>c!==last).map(c=>`<button class="btn ghost" data-act="radd" data-c="${c}">+ ${CITIES[c].name}</button>`).join('');
     const ready=r.stops.filter(st=>S.wh[st.c]).length>=2;
@@ -593,7 +679,7 @@ function renderDlg(){
     const units=unitsIn(cid), sh=dlg.ship!=='wh'?holdOf(dlg.ship,cid):null, valid=!!sh;
     const shipBtns=units.length>1?`<div class="shipsel">With ${units.map(o=>`<button data-act="mship" data-i="${o.k}" aria-pressed="${o.k===dlg.ship}">${o.n}</button>`).join('')}</div>`:'';
     const lots=[1,5,10,'max'].map(q=>`<button data-act="qty" data-q="${q}" aria-pressed="${S.qty===q}">${q==='max'?'Max':q}</button>`).join('');
-    const rows=GOODS.filter(g=>w.cargo[g.id]||(valid&&sh.qty(g.id))).map(g=>`<li class="good"><div class="gname"><b>${g.name}</b><small>Warehouse ${w.cargo[g.id]}${valid?` · ${sh.name} ${sh.qty(g.id)}`:''}</small></div>
+    const rows=GOODS.filter(g=>w.cargo[g.id]||(valid&&sh.qty(g.id))).map(g=>`<li class="good"><div class="gname">${gi(g.id)}<b>${g.name}</b><small>Warehouse ${w.cargo[g.id]}${valid?` · ${sh.name} ${sh.qty(g.id)}`:''}</small></div>
       <button class="px" data-act="store" data-g="${g.id}" ${valid&&sh.qty(g.id)&&usedH(w)<WH_CAP?'':'disabled'}><i>Store</i>↓</button>
       <button class="px" data-act="load" data-g="${g.id}" ${valid&&w.cargo[g.id]&&sh.used()<sh.cap?'':'disabled'}><i>Load</i>↑</button></li>`).join('');
     const m=S.mgr[cid], canHire=tierOf(S.rep[cid])>=MGR_TIER;
@@ -613,7 +699,7 @@ function renderDlg(){
       const step=(k,label,val)=>`<span class="stepper"><button data-act="mstep" data-g="${g.id}" data-k="${k}" data-d="-1" aria-label="Less">−</button><b>${val}</b><button data-act="mstep" data-g="${g.id}" data-k="${k}" data-d="1" aria-label="More">+</button></span>`;
       const rule = r.mode==='buy' ? `<div class="rule"><label>Stock up to (barrels)${step('qty','',r.qty)}</label><label>Pay at most (mk)${step('price','',r.price)}</label></div>`
         : r.mode==='sell' ? `<div class="rule"><label>Keep in store (barrels)${step('qty','',r.qty)}</label><label>Sell for at least (mk)${step('price','',r.price)}</label></div>` : '';
-      return `<li class="order"><div class="otop"><div class="gname"><b>${g.name}</b>${tag}<small>In store ${held} · town buys at ${sellP(cid,g.id)}, sells at ${buyP(cid,g.id)}</small></div><div class="seg" role="group" aria-label="${g.name} order">${seg}</div></div>${rule}</li>`; }).join('');
+      return `<li class="order"><div class="otop"><div class="gname">${gi(g.id)}<b>${g.name}</b>${tag}<small>In store ${held} · town buys at ${sellP(cid,g.id)}, sells at ${buyP(cid,g.id)}</small></div><div class="seg" role="group" aria-label="${g.name} order">${seg}</div></div>${rule}</li>`; }).join('');
     body.innerHTML=`<div><span class="eyebrow">Orders for ${m.name}</span><h2 id="dlgTitle">${CITIES[cid].name}</h2><p class="note">Once a day your manager buys into the warehouse or sells out of it, within these limits and as far as your purse allows.</p></div>
       <div class="mgr"><div><span class="eyebrow">Purse reserve</span><small>He never spends below this, and always leaves three days of wages on top.</small></div><span class="stepper"><button data-act="mres" data-d="-1" aria-label="Less">−</button><b>${fmt(m.reserve??500)}</b><button data-act="mres" data-d="1" aria-label="More">+</button></span></div>
       <ul class="goods orders">${rows}</ul>
@@ -694,6 +780,7 @@ function renderDlg(){
     body.innerHTML=`<div><span class="eyebrow">Settings</span><h2 id="dlgTitle">The Kontor</h2></div>
     ${onOff('music','Music','Harbour airs by day and night, the sea chart, winter and feast days.')}
     ${onOff('sfx','Sound effects','Surf, gulls, rain and the noon bell.')}
+    ${onOff('awake','Keep the screen on','The screen does not dim or lock while the game is open.')}
     ${onOff('notify','Notifications',window.KoggeNative?'Sent by the app while the game is closed.':'Sent by the Android app while the game is closed. Not available in the browser.')}
     ${PREFS.notify?`<div class="setrow" style="display:block"><div class="chiprow">${NOTIFY_CATS.map(([k,l,h])=>`<button class="chipbtn" data-act="pref" data-k="${k}" data-v="${PREFS[k]?0:1}" aria-pressed="${PREFS[k]}" title="${h}">${l}</button>`).join('')}</div><small class="note small" style="display:block;margin-top:6px">Tap to choose which news reaches you.</small></div>`:''}
     ${DEV?`<details class="setrow" style="display:block"><summary style="cursor:pointer;color:var(--ink-soft)">Developer</summary><div class="setrow" style="border:0"><p>Test pace<small>Multiplies time for testing. Never use in a real season.</small></p><div class="seg" role="group" aria-label="Test pace">${[1,60].map(p=>`<button data-act="pace" data-p="${p}" aria-pressed="${devPace===p}">×${p}</button>`).join('')}</div></div><p class="note small">A season played at a test pace is not sent to the leaderboard.</p></details>`:''}
@@ -716,8 +803,8 @@ function buyWarehouse(cid){
 }
 function crewChange(act,nStr){
   const cid=dlg.arg, sh=S.ships[dlg.ship]; if(!sh||sh.at!==cid) return; const T=SHIPTYPES[sh.type]; let n=+nStr;
-  if(act==='hire'){ n=Math.min(n,T.maxCrew-sh.crew,S.sailors[cid]); if(n<=0) return; sh.crew+=n; S.sailors[cid]-=n; log(`${n} sailor${n>1?'s':''} signed on to the ${sh.name} in ${CITIES[cid].name}`,true); }
-  else { n=Math.min(n,sh.crew); if(n<=0) return; sh.crew-=n; S.sailors[cid]=Math.min(POOL_MAX[cid]+10,S.sailors[cid]+n); log(`${n} sailor${n>1?'s':''} left the ${sh.name} in ${CITIES[cid].name}`,true); }
+  if(act==='hire'){ n=Math.min(n,T.maxCrew-sh.crew,S.sailors[cid]); if(n<=0) return; sh.crew+=n; S.sailors[cid]-=n; void 0; }
+  else { n=Math.min(n,sh.crew); if(n<=0) return; sh.crew-=n; S.sailors[cid]=Math.min(POOL_MAX[cid]+10,S.sailors[cid]+n); void 0; }
   save(); renderDlg();
 }
 function renderAll(){ renderHeader(); if(dlg && dlg.kind!=='chron' && dlg.kind!=='house' && !(dlg.kind==='settings' && document.activeElement && document.activeElement.id==='houseName')) renderDlg(); dirty=false; }
@@ -1024,7 +1111,7 @@ function standingHtml(cid){ const r=S.rep[cid]||0, t=tierOf(r), next=TIERS[t+1];
 function transfer(dir,gid){
   const cid=dlg.arg, u=holdOf(dlg.ship,cid); if(dlg.ship==='wh'||!u||!S.wh[cid]) return; const w=whHold(S.wh[cid]);
   const n=moveGoods(dir==='store'?u:w, dir==='store'?w:u, gid, S.qty==='max'?1e6:S.qty);
-  if(n){ log(`${n} ${G[gid].name.toLowerCase()} ${dir==='store'?`stored from the ${u.name}`:`loaded onto the ${u.name}`} in ${CITIES[cid].name}`,true); save(); }
+  if(n){ void 0; save(); }
   renderDlg();
 }
 function crewHtml(sh){ const T=SHIPTYPES[sh.type], sp=shipSpeed(sh);
@@ -1050,7 +1137,7 @@ function trade(act,gid){
       S.purse+=p; st[gid]+=1; S.press[cid][gid]++; total+=p; n++; }
   }
   if(n){ gainRep(cid, total/100*(act==='sell'&&(CITIES[cid].want.includes(gid)||neededIn(cid).has(gid))?2:1));
-    log(`${label}: ${act==='buy'?'bought':'sold'} ${n} ${G[gid].name.toLowerCase()} in ${CITIES[cid].name} for ${fmt(total)} mk`, true); save();
+    void 0; save();
     const p1=act==='buy'?buyP(cid,gid):sellP(cid,gid);
     if(n>1&&p1!==p0) toast(`${act==='buy'?'Bought':'Sold'} ${n} ${G[gid].name.toLowerCase()} for ${fmt(total)} mk (about ${Math.round(total/n)} each). The ${act==='buy'?'asking':'offered'} price ${p1>p0?'rose':'fell'} from ${p0} to ${p1}.`); }
   renderHeader(); renderDlg();
@@ -1080,8 +1167,8 @@ function onAct(b){
   else if(a==='route'){ openDlg('route',leadOf(+b.dataset.i)); }
   else if(a==='openconv'){ openDlg('convoy',leadOf(+b.dataset.i)); }
   else if(a==='cjoin'){ joinConvoy(+b.dataset.i,+b.dataset.j); }
-  else if(a==='cleave'){ const m=S.ships[+b.dataset.i], id=m.conv; delete m.conv; log(`The ${m.name} left the ${S.convoys[id].name}`,true); save(); renderDlg(); if(scene&&view==='town') scene.buildTown(townAt),scene.refreshView(); }
-  else if(a==='cdisband'){ const i=+b.dataset.i, id=S.ships[i].conv, name=S.convoys[id].name; for(const o of convMembers(id)) delete o.s.conv; if(S.ships[i].route) S.ships[i].route.on=false; delete S.convoys[id]; log(`The ${name} was disbanded`,true); save(); dlg.kind='ship'; renderDlg(); }
+  else if(a==='cleave'){ const m=S.ships[+b.dataset.i], id=m.conv; delete m.conv; void 0; save(); renderDlg(); if(scene&&view==='town') scene.buildTown(townAt),scene.refreshView(); }
+  else if(a==='cdisband'){ const i=+b.dataset.i, id=S.ships[i].conv, name=S.convoys[id].name; for(const o of convMembers(id)) delete o.s.conv; if(S.ships[i].route) S.ships[i].route.on=false; delete S.convoys[id]; void 0; save(); dlg.kind='ship'; renderDlg(); }
   else if(a==='radd'){ const r=S.ships[dlg.arg].route; if(r.stops.length>=4){ toast('A route has at most four stops.'); return; } const c=b.dataset.c;
     r.stops.push({c,unloadAll:true,unload:[],load:CITIES[c].prod.slice()}); for(const st of r.stops) st.unload=[]; save(); renderDlg(); }
   else if(a==='rdel'){ const r=S.ships[dlg.arg].route; r.stops.splice(+b.dataset.k,1); if(r.i>=r.stops.length) r.i=0; if(r.stops.length<2) r.on=false; save(); renderDlg(); }
@@ -1089,7 +1176,7 @@ function onAct(b){
   else if(a==='run'||a==='rld'){ const st=S.ships[dlg.arg].route.stops[+b.dataset.k], arr=a==='run'?st.unload:st.load, g=b.dataset.g, j=arr.indexOf(g); if(j>=0) arr.splice(j,1); else arr.push(g); save(); renderDlg(); }
   else if(a==='rgo'){ startRoute(dlg.arg); renderAll(); renderDlg(); }
   else if(a==='rstop'){ const sh=S.ships[dlg.arg]; sh.route.on=false; log(`The ${sh.name} will stop its trade route ${sh.voy?'when it reaches '+CITIES[sh.voy.to].name:'here'}`); save(); renderDlg(); }
-  else if(a==='pref'){ PREFS[b.dataset.k]=b.dataset.v==='1'; savePrefs(); if(b.dataset.k==='music'||b.dataset.k==='sfx'){ Sound.init(); Sound.apply(); } if(b.dataset.k==='notify'&&PREFS.notify&&window.KoggeNative&&window.KoggeNative.requestPermission) window.KoggeNative.requestPermission(); renderDlg(); }
+  else if(a==='pref'){ PREFS[b.dataset.k]=b.dataset.v==='1'; savePrefs(); if(b.dataset.k==='music'||b.dataset.k==='sfx'){ Sound.init(); Sound.apply(); } if(b.dataset.k==='awake') applyAwake(); if(b.dataset.k==='notify'&&PREFS.notify&&window.KoggeNative&&window.KoggeNative.requestPermission) window.KoggeNative.requestPermission(); renderDlg(); }
   else if(a==='totitle'){ closeDlg(); showTitle(); }
   else if(a==='mres'){ const m=S.mgr[dlg.arg]; m.reserve=clamp((m.reserve??500)+(+b.dataset.d)*250,0,20000); save(); renderDlg(); }
   else if(a==='firemgr1'){ confirmReset='mgr'; renderDlg(); }
@@ -1132,7 +1219,7 @@ function joinConvoy(i,j){   // i joins j (j may already lead a convoy)
   let id=b.conv;
   if(!inConvoy(b)){ const lead=SHIPTYPES[a.type].cap>SHIPTYPES[b.type].cap?i:jl; id='c'+(++S.convSeq); S.convoys[id]={name:`Convoy of the ${S.ships[lead].name}`,lead}; b.conv=id; }
   if(inConvoy(a) && a.conv!==id){ const old=a.conv; for(const o of convMembers(old)) o.s.conv=id; delete S.convoys[old]; } else a.conv=id;
-  log(`The ${S.convoys[id].name} now counts ${convMembers(id).length} ships`,true); save();
+  void 0; save();
   dlg={kind:'convoy',arg:S.convoys[id].lead}; renderDlg();
   if(scene&&view==='town') { scene.buildTown(townAt); scene.refreshView(); }
 }
@@ -1810,11 +1897,6 @@ class Main extends Phaser.Scene{
   buildSea(){
     const add=o=>{this.sea.push(o);return o;};
     add(this.add.image(0,0,'seamap').setOrigin(0).setDepth(0).setScale(1/RES));
-    const g=add(this.add.graphics().setDepth(1)); g.lineStyle(10,0x0a1418,.25); g.strokeRect(5,5,W-10,H-10); g.lineStyle(2,0xc9a352,.7); g.strokeRect(10,10,W-20,H-20);
-    // compass rose
-    const [cx,cy]=MAP.compass; g.fillStyle(0xe9dcb4,.18); g.fillCircle(cx,cy,34); g.lineStyle(1,0xe9dcb4,.6); g.strokeCircle(cx,cy,34); g.strokeCircle(cx,cy,30);
-    for(let k=0;k<8;k++){const a=k*Math.PI/4-Math.PI/2,Lr=k%2?19:31,w=k%2?4:6;const tip=[cx+Math.cos(a)*Lr,cy+Math.sin(a)*Lr],l=[cx+Math.cos(a-Math.PI/2)*w,cy+Math.sin(a-Math.PI/2)*w],rr=[cx+Math.cos(a+Math.PI/2)*w,cy+Math.sin(a+Math.PI/2)*w];
-      g.fillStyle(0x1c2a24,.85);g.fillTriangle(cx,cy,tip[0],tip[1],l[0],l[1]);g.fillStyle(k===0?0xc8402c:0xe9dcb4,.95);g.fillTriangle(cx,cy,tip[0],tip[1],rr[0],rr[1]);}
     const txt=(x,y,s,o={})=>add(this.add.text(x,y,s,Object.assign({fontFamily:'"IM Fell English", Georgia, serif',fontSize:'15px',color:'#e9dcb4',resolution:TEXT_RES},o)).setOrigin(.5).setDepth(o.depth||5).setAlpha(o.a??1));
     const L=MAP.labels;
     txt(...L['MARE BALTICUM'],'MARE BALTICUM',{fontSize:'17px',a:.55,letterSpacing:5}).setRotation(-.35);
@@ -1924,7 +2006,7 @@ class Main extends Phaser.Scene{
     for(let X=-8;X<56;X++) for(let Y=-8;Y<30;Y++){ if(!(X<10||Y<12)) continue; const t=this.grid[mk(X,Y)]; if(!t||t==='field') continue; if(rnd()<.3) treeAt(X,Y,(rnd()-.5)*.5,(rnd()-.5)*.5); }
     { const mX=5,mY=22; place('MILL',mX,mY); const m=TEX.SAIL0; const s=add(this.add.image(TX(mX,mY),TY(mX,mY),'SAIL0').setScale(1/RES).setOrigin(m.ax,m.ay).setDepth(TY(mX+1,mY+1)+.5)); this.mills.push(s); }
     // landmarks
-    place('HALL',25,15,3,2); place('CHURCH',31,18,5,3);
+    const hallIm=place('HALL',25,15,3,2); place('CHURCH',31,18,5,3);
     const tapTo=(obj,fn)=>{ obj.setInteractive(obj.type==='Image'?{useHandCursor:true,pixelPerfect:true,alphaTolerance:10}:{useHandCursor:true}); obj.on('pointerup',()=>{ if(this.drag&&this.drag.d>TAP) return; fn(); }); };
     const sign=(text,X,Y,Z,fn,dark)=>{ const t=add(this.add.text(TX(X,Y),TY(X,Y,Z),text,{fontFamily:'"IM Fell English SC", Georgia, serif',fontSize:'17px',color:dark?'#f4ead0':'#2b1c10',backgroundColor:dark?'#5a2a1c':'#ecdcb2',padding:{x:8,y:2},resolution:TEXT_RES}).setOrigin(.5).setDepth(9200)); t.noTint=true; tapTo(t,fn); return t; };
     { const act=activeIn(cid).map(e=>e.kind);
@@ -1937,6 +2019,7 @@ class Main extends Phaser.Scene{
         for(let i=0;i<30;i++){ const sg=[[24.3,18.3],[29.7,22.7]], k='p'+(rnd()*6|0); const im=add(this.add.image(0,0,k).setOrigin(.5,.92).setScale(1/RES)); this.walkers.push({im,sg,t:rnd(),dir:rnd()<.5?1:-1,v:(.15+rnd()*.2)/7,pause:0,ph:rnd()*6}); } }
       if(act.includes('fire')){ for(let i=0;i<4;i++){ const X=14+rnd()*24, Y=14+rnd()*12;
         const pe=add(this.add.particles(TX(X,Y),TY(X,Y,2.4),'puff',{speedY:{min:-30,max:-18},speedX:{min:4,max:12},lifespan:7000,frequency:160,scale:{start:.8,end:3.2},alpha:{start:.45,end:0},tint:0x3a3430,quantity:1}).setDepth(9400)); pe.noTint=true; } } }
+    if(hallIm) tapTo(hallIm,()=>openDlg('rathaus',cid)); sign('Town hall',26.5,16,7.2,()=>openDlg('rathaus',cid));
     { const mh=place('MARKET',25,26,3,2); tapTo(mh,()=>openDlg('market',cid)); sign('Market hall',26.4,26.8,4.4,()=>openDlg('market',cid)); }
     { const own=!!S.wh[cid], wh=place(own?'KONTOR':'WH1',18,27); tapTo(wh,()=>openDlg('wh',cid)); sign(own?'Your warehouse':'Warehouse for sale',18.5,27.5,own?4.6:4.0,()=>openDlg('wh',cid),!own); }
     { const yd=place('YARD',41,27,2,1); if(yd) tapTo(yd,()=>openDlg('yard',cid)); sign('Shipyard',42,27.6,3.4,()=>openDlg('yard',cid));
@@ -2000,6 +2083,7 @@ class Main extends Phaser.Scene{
   /* ---------- frame loop ---------- */
   update(time,dtRaw){
     const dt=Math.min(dtRaw,100);
+    this.input.enabled = !overlayOpen();   // taps on a dialog, letter or the title must never reach the town or chart behind it
     { const now=Date.now(), real=now-(this.lastReal||now); this.lastReal=now;   // follow the real clock, not frame time
       if(S.paused){ /* the world waits */ }
       else if(real>60000){ catchUp(real); if(window.__letter){ showLetter(window.__letter); window.__letter=null; } if(view==='town'&&townAt) this.buildTown(townAt), this.refreshView(); renderAll(); }
@@ -2064,7 +2148,7 @@ function showTitle(){
   $('tContinue').textContent = fresh ? 'Begin' : 'Continue'; $('tNew').hidden=fresh; $('tConfirm').hidden=true;
   $('title').hidden=false; document.body.classList.add('at-title');
 }
-function leaveTitle(){ $('title').hidden=true; document.body.classList.remove('at-title'); Sound.init();
+function leaveTitle(){ $('title').hidden=true; document.body.classList.remove('at-title'); Sound.init(); applyAwake();
   if(PREFS.notify && window.KoggeNative && window.KoggeNative.requestPermission) window.KoggeNative.requestPermission();
   if(!S.welcomed || !S.house) return askHouse(()=>{ if(!S.welcomed) showWelcome(); else if(window.__letter){ showLetter(window.__letter); window.__letter=null; } renderAll(); });
   if(!S.welcomed) showWelcome(); else if(window.__letter){ showLetter(window.__letter); window.__letter=null; } renderAll(); }
@@ -2078,15 +2162,17 @@ $('tHall').onclick=()=>openDlg('hall');
 showTitle();
 // Lifecycle. The Android app calls these directly from onPause/onResume; the browser uses visibilitychange.
 let backgrounded=false;
-window.koggeBackground=()=>{ if(backgrounded) return; backgrounded=true; speed=1; devPace=1; save(); if(!S.paused) pushSchedule(); else { try{ window.KoggeNative&&window.KoggeNative.cancelAll(); }catch(e){} } };
-window.koggeForeground=()=>{ if(!backgrounded) return; backgrounded=false; try{ window.KoggeNative&&window.KoggeNative.cancelAll(); }catch(e){} renderAll(); };
+let speedBeforeBg=1;
+window.koggeBackground=()=>{ if(backgrounded) return; backgrounded=true; speedBeforeBg=speed; speed=1; devPace=1; save(); if(!S.paused) pushSchedule(); else { try{ window.KoggeNative&&window.KoggeNative.cancelAll(); }catch(e){} } };
+window.koggeForeground=()=>{ if(!backgrounded) return; backgrounded=false; speed=speedBeforeBg||1;   // time away runs at 1×; the chosen speed resumes
+  try{ window.KoggeNative&&window.KoggeNative.cancelAll(); }catch(e){} renderAll(); };
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) window.koggeBackground(); else window.koggeForeground(); });
 window.addEventListener('pagehide',save);
 function start(){
   if(!window.Phaser){ $('loading').textContent='The game engine could not load.'; return; }
   const el=$('game'), sz=()=>[Math.max(2,Math.round(el.clientWidth*DPR)),Math.max(2,Math.round(el.clientHeight*DPR))];
   const [w0,h0]=sz();
-  const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:w0,height:h0,backgroundColor:'#1c2a2c',
+  const game=new Phaser.Game({type:Phaser.AUTO,parent:'game',width:w0,height:h0,backgroundColor:'#1c2a2c',input:{windowEvents:false},
     scale:{mode:Phaser.Scale.NONE,zoom:1/DPR},scene:Main,antialias:true,disableContextMenu:true});
   let rz=0; const onResize=()=>{ clearTimeout(rz); rz=setTimeout(()=>{ const [w,h]=sz(); game.scale.resize(w,h); if(scene){ scene.cameras.main.setSize(w,h); scene.applyZoom(); } },120); };
   window.addEventListener('resize',onResize); window.addEventListener('orientationchange',onResize);
@@ -2094,6 +2180,6 @@ function start(){
 const fonts=document.fonts?Promise.all(['17px "IM Fell English SC"','15px "IM Fell English"','italic 15px "IM Fell English"'].map(f=>document.fonts.load(f))):Promise.resolve();
 Promise.race([fonts,new Promise(r=>setTimeout(r,2500))]).catch(()=>{}).then(start);
 Cloud.init();
-if(DEV) window.__alderman={ openDlg, get S(){ return S; }, Cloud, NameFilter };   // console helpers on localhost / ?dev only
+if(DEV) window.__alderman={ openDlg, get S(){ return S; }, Cloud, NameFilter, sail, redirect, redirectPath, seaClear, route, CITIES, shipPos, advanceTo:t=>advanceTo(t) };   // console helpers on localhost / ?dev only
 if(newerSave) setTimeout(()=>toast('Your save comes from a newer version of Alderman. It is kept aside; reload the newest version to continue it.'),1500);
 })();

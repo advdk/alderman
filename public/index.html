@@ -33,16 +33,12 @@
   <p class="tfoot">Lübeck · Anno Domini 1370</p>
 </div>
 
-<header class="titlebar carved">
+<header class="titlebar carved docked">
   <div class="purse" title="Your purse">
     <svg width="26" height="22" viewBox="0 0 26 22" aria-hidden="true"><g stroke="#6b4a14" stroke-width="1"><ellipse cx="9" cy="17" rx="8" ry="3.2" fill="#b98a2e"/><ellipse cx="9" cy="14.5" rx="8" ry="3.2" fill="#d6aa4a"/><ellipse cx="17" cy="16" rx="8" ry="3.2" fill="#c89a3a"/><ellipse cx="17" cy="13.3" rx="8" ry="3.2" fill="#e7c063"/><ellipse cx="13" cy="9" rx="8" ry="3.2" fill="#f0cf78"/></g></svg>
     <b id="sPurse">2,500 mk</b>
   </div>
-  <div class="datebox"><div class="date" id="sDate">1 May 1370</div>
-    <div class="clockseg" role="group" aria-label="Time" id="clock">
-      <button data-sp="0" aria-label="Pause"><svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="1.5" width="3" height="9" fill="currentColor"/><rect x="7" y="1.5" width="3" height="9" fill="currentColor"/></svg></button>
-      <button data-sp="1" aria-label="Normal speed">1×</button><button data-sp="2" aria-label="Double speed">2×</button><button data-sp="4" aria-label="Four times speed">4×</button>
-    </div></div>
+  <div class="datebox"><div class="date" id="sDate">1 May 1370</div></div>
   <div class="hbtns">
   <button class="bell" id="vSettings" aria-label="Settings"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#e3c273" stroke="#6b4a14" stroke-width="1" d="M10.3 2.2h3.4l.5 2.6c.6.2 1.2.5 1.8.9l2.4-1.1 2.4 2.4-1.1 2.4c.4.6.7 1.2.9 1.8l2.6.5v3.4l-2.6.5c-.2.6-.5 1.2-.9 1.8l1.1 2.4-2.4 2.4-2.4-1.1c-.6.4-1.2.7-1.8.9l-.5 2.6h-3.4l-.5-2.6c-.6-.2-1.2-.5-1.8-.9l-2.4 1.1-2.4-2.4 1.1-2.4c-.4-.6-.7-1.2-.9-1.8l-2.6-.5v-3.4l2.6-.5c.2-.6.5-1.2.9-1.8L3.4 6.4l2.4-2.4 2.4 1.1c.6-.4 1.2-.7 1.8-.9z"/><circle cx="12" cy="12" r="3.4" fill="#3a2614" stroke="#6b4a14"/></svg></button>
   <button class="bell" id="bell" aria-label="Open the chronicle">
@@ -52,7 +48,12 @@
   </div>
 </header>
 
-<nav class="bottombar carved" aria-label="Game">
+<div class="speedfloat carved" id="speedWrap"><div class="clockseg" role="group" aria-label="Time" id="clock">
+    <button data-sp="0" aria-label="Pause"><svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="1.5" width="3" height="9" fill="currentColor"/><rect x="7" y="1.5" width="3" height="9" fill="currentColor"/></svg></button>
+    <button data-sp="1" aria-label="Normal speed">1×</button><button data-sp="2" aria-label="Double speed">2×</button><button data-sp="4" aria-label="Four times speed">4×</button>
+  </div></div>
+
+<nav class="bottombar carved docked" aria-label="Game">
   <button class="bb" id="vToggle"><svg id="vIcon" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"></svg><span id="vLabel">Sea chart</span></button>
   <button class="bb" id="vFleet"><svg width="26" height="24" viewBox="0 0 26 24" aria-hidden="true"><path d="M3 16h20l-3 5H6z" fill="#c89a5a" stroke="#6b4a14"/><path d="M13 2v14" stroke="#e3c273" stroke-width="1.6"/><path d="M13.8 3.5c4 1.5 5.5 5 5.8 10.5H13.8z" fill="#efe3c4"/><path d="M12.2 5c-3 1.5-4.2 4-4.5 9h4.5z" fill="#efe3c4"/></svg><span>Fleet</span></button>
 </nav>
