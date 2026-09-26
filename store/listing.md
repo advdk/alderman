@@ -29,7 +29,7 @@ Graphics are in this folder: `icon-512.png`, `feature-graphic.png`, `screenshots
 >
 > Alderman is a slow, calm trading game of the Hanseatic League. Buy salt and beer where they are cheap, carry them across the Baltic, and sell where they are wanted. Grow one ship into a fleet, win the trust of twelve towns from Bergen to Reval, and be elected alderman of the Hanse.
 >
-> • A day passes in about five minutes. Send a ship out, put the phone away, and come back to news from your factor.
+> • A day passes in a little over a minute. Send a ship out, put the phone away, and come back to news from your factor.
 > • Real markets: every barrel moves the price, and you see the true cost of a lot before you trade.
 > • Festivals, hard winters, fires and herring shoals change what each town needs.
 > • Hire crews, order new ships, buy warehouses and run trade routes while you sleep.

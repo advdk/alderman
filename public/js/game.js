@@ -6,7 +6,7 @@
 const W = 960, H = 1040, MAPV = 2;  // sea chart world: real coastlines (Natural Earth), 4.2°E–30.2°E, projected around 59°N
 const RES = 2, DPR = Math.min(2, window.devicePixelRatio||1), TEXT_RES = Math.min(4, DPR*2), TAP = 12*DPR;
 const TW = 1400, TH = 1300;          // town world size
-const DAY_REAL_MS = 300000;          // 1 game day = 5 real minutes
+const DAY_REAL_MS = 75000;           // 1 game day = 75 real seconds at 1× (1.0.3: the old 4× is the new base)
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const hs = s => [...s].reduce((a,c)=>Math.imul(a^c.charCodeAt(0),16777619)>>>0, 2166136261);
@@ -211,7 +211,7 @@ function load(){
 }
 function save(){ if(deleted) return; try{ S.savedAt=Date.now(); localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 S = load();
-let speed = 4, devPace = 1, dirty = true, awayEvents = null, SIM = false;
+let speed = 1, devPace = 1, dirty = true, awayEvents = null, SIM = false;
 function note(kind,title,body){ if(awayEvents) awayEvents.push({t:S.t,kind,title,body,msg:body}); }
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -781,7 +781,7 @@ function renderDlg(){
   }
   if(dlg.kind==='settings'){
     body.innerHTML=`<div><span class="eyebrow">Settings</span><h2 id="dlgTitle">The Kontor</h2></div>
-    <div class="setrow speedrow"><p>Game speed<small>${S.paused?'Paused: look around as you like; orders wait.':'At 1× a day passes in about five minutes.'}</small></p><div class="clockseg" role="group" aria-label="Game speed">${[[0,'Pause'],[1,'Normal speed'],[2,'Double speed'],[4,'Four times speed']].map(([v,l])=>`<button data-act="speed" data-sp="${v}" aria-label="${l}" aria-pressed="${S.paused?v===0:v===speed}">${v?v+'×':'<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="3" height="9" fill="currentColor"/><rect x="7" y="1.5" width="3" height="9" fill="currentColor"/></svg>'}</button>`).join('')}</div></div>
+    <div class="setrow speedrow"><p>Game speed<small>${S.paused?'Paused: look around as you like; orders wait.':'At 1× a day passes in a little over a minute.'}</small></p><div class="clockseg" role="group" aria-label="Game speed">${[[0,'Pause'],[1,'Normal speed'],[2,'Double speed'],[4,'Four times speed']].map(([v,l])=>`<button data-act="speed" data-sp="${v}" aria-label="${l}" aria-pressed="${S.paused?v===0:v===speed}">${v?v+'×':'<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="3" height="9" fill="currentColor"/><rect x="7" y="1.5" width="3" height="9" fill="currentColor"/></svg>'}</button>`).join('')}</div></div>
     <div class="setrow"><p>Language<small>Menus and buttons. Letters and news follow in the next update.</small></p><div class="seg" role="group" aria-label="Language" data-noi18n>${Object.entries(L10N.langs).map(([k,n])=>`<button data-act="lang" data-v="${k}" lang="${k}" aria-pressed="${L10N.lang===k}">${n}</button>`).join('')}</div></div>
     ${onOff('music','Music','Harbour airs by day and night, the sea chart, winter and feast days.')}
     ${onOff('sfx','Sound effects','Surf, gulls, rain and the noon bell.')}
@@ -1251,7 +1251,7 @@ function showWelcome(){
   S.welcomed=true;
   const seasonLine = S.season>1 ? `<p><i>Season ${S.season} begins.</i> The markets and the weather will not be quite as you remember them.</p>` : '';
   showLetter(`${seasonLine}<p>The Kontor at Lübeck now bears the name <b>${esc(houseName())}</b>. One ship lies at the quay: the cog <b>Adler</b>. Trade her well and she will pay for her sisters.</p>
-  <p>The Baltic keeps a slow and patient pace, and so may you. A day here passes in about five minutes of your own time, and a voyage takes half an hour or so. Load a ship at the market hall by the harbour, send it out, and go about your day. Sailors are hired at the tavern; a fuller crew sails faster, but each sailor is paid every day. I shall keep the ledger while you are away.</p>
+  <p>The Baltic keeps a slow and patient pace, and so may you. A day here passes in a little over a minute of your own time, and a voyage takes some minutes. Load a ship at the market hall by the harbour, send it out, and go about your day. Sailors are hired at the tavern; a fuller crew sails faster, but each sailor is paid every day. I shall keep the ledger while you are away.</p>
   <p>Salt and beer are cheap in Lübeck. Riga and Danzig pay well for salt. And word is that Danzig holds its church festival within the week: its taverns will pay well for beer.</p>`);
   save();
 }
@@ -2172,9 +2172,9 @@ $('tHall').onclick=()=>openDlg('hall');
 showTitle();
 // Lifecycle. The Android app calls these directly from onPause/onResume; the browser uses visibilitychange.
 let backgrounded=false;
-let speedBeforeBg=4;
+let speedBeforeBg=1;
 window.koggeBackground=()=>{ if(backgrounded) return; backgrounded=true; speedBeforeBg=speed; speed=1; devPace=1; save(); if(!S.paused) pushSchedule(); else { try{ window.KoggeNative&&window.KoggeNative.cancelAll(); }catch(e){} } };
-window.koggeForeground=()=>{ if(!backgrounded) return; backgrounded=false; speed=speedBeforeBg||4;   // time away runs at 1×; the chosen speed resumes
+window.koggeForeground=()=>{ if(!backgrounded) return; backgrounded=false; speed=speedBeforeBg||1;   // time away runs at 1×; the chosen speed resumes
   try{ window.KoggeNative&&window.KoggeNative.cancelAll(); }catch(e){} renderAll(); };
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) window.koggeBackground(); else window.koggeForeground(); });
 window.addEventListener('pagehide',save);

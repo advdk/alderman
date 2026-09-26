@@ -95,7 +95,7 @@
     'No season has ended yet. Finished seasons are kept here, even after you start again.':'Noch keine Saison ist beendet. Abgeschlossene Saisons bleiben hier, auch wenn du neu beginnst.',
     // settings
     'The Kontor':'Das Kontor', 'Game speed':'Spieltempo', 'Pause':'Pause', 'Normal speed':'Normales Tempo', 'Double speed':'Doppeltes Tempo', 'Four times speed':'Vierfaches Tempo',
-    'At 1× a day passes in about five minutes.':'Bei 1× vergeht ein Tag in etwa fünf Minuten.', 'Paused: look around as you like; orders wait.':'Pausiert: Schau dich in Ruhe um, Befehle warten.',
+    'At 1× a day passes in a little over a minute.':'Bei 1× vergeht ein Tag in gut einer Minute.', 'Paused: look around as you like; orders wait.':'Pausiert: Schau dich in Ruhe um, Befehle warten.',
     'Language':'Sprache', 'Menus and buttons. Letters and news follow in the next update.':'Menüs und Schaltflächen. Briefe und Nachrichten folgen mit dem nächsten Update.',
     'Music':'Musik', 'Harbour airs by day and night, the sea chart, winter and feast days.':'Hafenweisen bei Tag und Nacht, die Seekarte, Winter und Festtage.',
     'Sound effects':'Geräusche', 'Surf, gulls, rain and the noon bell.':'Brandung, Möwen, Regen und die Mittagsglocke.',

@@ -51,7 +51,7 @@ For the Google Play button, use Google's official **"Get it on Google Play"** ba
 Lübeck, Anno Domini 1370. The Kontor is yours, and one cog lies at the quay. Alderman is a slow, calm trading game set in the towns of the Hanseatic League. Buy salt and beer where they are cheap, carry them across the Baltic, and sell where they are wanted. Grow a single ship into a fleet, win the trust of twelve towns from Bergen to Reval, and be elected alderman of the Hanse.
 
 **Features:**
-- A day on the Baltic passes in about five minutes. Send a ship out and come back to news from your factor.
+- A day on the Baltic passes in a little over a minute. Send a ship out and come back to news from your factor.
 - Real markets: every barrel moves the price, and the market shows the true cost of a whole lot before you trade.
 - Twelve Hanseatic towns and nine goods, with festivals, hard winters, fires, failed harvests and herring shoals.
 - Hire crews, order cogs and hulks, buy warehouses, hire managers, and run trade routes while you sleep.

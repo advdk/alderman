@@ -1,1 +1,1 @@
-﻿Tester feedback: 4x speed by default, speed and language in Settings (now in German too), a lighter market, town news as a small banner, standing in the town hall, and no more "Alarms & reminders" screen on reopen.
+﻿Time now runs four times faster at every speed: at 1x a day passes in a little over a minute (the old 4x). 2x and 4x go faster still.
