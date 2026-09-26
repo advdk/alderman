@@ -29,7 +29,8 @@
         const p = await LN.checkPermissions(); if(p.display !== 'granted') return;
         await channel();
         await LN.schedule({ notifications:list.map(n=>({ id:n.id, title:n.title, body:n.body, channelId:CHANNEL,
-          smallIcon:'ic_stat_alderman', iconColor:'#d2a957', schedule:{ at:new Date(n.atMs) } })) });
+          smallIcon:'ic_stat_alderman', iconColor:'#d2a957', isExactNotification:false,
+          schedule:{ at:new Date(n.atMs), allowWhileIdle:true } })) });
       });
     },
   };

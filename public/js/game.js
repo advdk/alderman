@@ -10,7 +10,8 @@ const DAY_REAL_MS = 300000;          // 1 game day = 5 real minutes
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const hs = s => [...s].reduce((a,c)=>Math.imul(a^c.charCodeAt(0),16777619)>>>0, 2166136261);
-const fmt = n => Math.round(n).toLocaleString('en-GB');
+const L10N = window.I18N || { lang:'en', langs:{en:'English'}, locale:'en-GB', t:s=>s, dateStr:null, shortDate:null };
+const fmt = n => Math.round(n).toLocaleString(L10N.locale);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const lerp=(a,b,t)=>a+(b-a)*t;
 function lerpC(a,b,t){const r=lerp((a>>16)&255,(b>>16)&255,t),g=lerp((a>>8)&255,(b>>8)&255,t),bl=lerp(a&255,b&255,t);return (Math.round(r)<<16)|(Math.round(g)<<8)|Math.round(bl)}
@@ -132,7 +133,7 @@ const SAVE_VERSION = 3;   // bump when the save format changes, and add a step t
 const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());   // the Android app
 const DEV = !NATIVE && (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) || new URLSearchParams(location.search).has('dev'));
 const VERSION = (document.querySelector('meta[name="alderman-version"]')||{}).content || 'dev';
-const PREF_DEFAULTS={music:true, sfx:true, awake:false, notify:true, nArrive:true, nRoute:true, nNews:true, nMoney:true, nYard:true};
+const PREF_DEFAULTS={lang:'', music:true, sfx:true, awake:false, notify:true, nArrive:true, nRoute:true, nNews:true, nMoney:true, nYard:true};
 const PREFS=(()=>{ try{ return Object.assign({},PREF_DEFAULTS,JSON.parse(localStorage.getItem(PREF_KEY)||'{}')); }catch(e){ return Object.assign({},PREF_DEFAULTS); } })();
 function savePrefs(){ try{ localStorage.setItem(PREF_KEY,JSON.stringify(PREFS)); }catch(e){} }
 const NOTIFY_CATS=[['nArrive','Arrivals','A ship you sent makes port'],['nRoute','Trade routes','A route completes a round, or pauses'],['nNews','Town news','Festivals, hard winters, your standing'],['nMoney','Money','Debt warnings and bankruptcy'],['nYard','Shipyard','A new ship is launched']];
@@ -210,13 +211,13 @@ function load(){
 }
 function save(){ if(deleted) return; try{ S.savedAt=Date.now(); localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 S = load();
-let speed = 1, devPace = 1, dirty = true, awayEvents = null, SIM = false;
+let speed = 4, devPace = 1, dirty = true, awayEvents = null, SIM = false;
 function note(kind,title,body){ if(awayEvents) awayEvents.push({t:S.t,kind,title,body,msg:body}); }
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function dateOf(t){const d=new Date(Date.UTC(2001,4,1));d.setUTCDate(d.getUTCDate()+Math.floor(t));return d}
-const dateStr=t=>{const d=dateOf(t);return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${1370+d.getUTCFullYear()-2001}`};
-const shortDate=t=>{const d=dateOf(t);return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()].slice(0,3)}`};
+const dateStr=t=>{const d=dateOf(t), y=1370+d.getUTCFullYear()-2001; return L10N.dateStr?L10N.dateStr(d.getUTCDate(),d.getUTCMonth(),y):`${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${y}`};
+const shortDate=t=>{const d=dateOf(t); return L10N.shortDate?L10N.shortDate(d.getUTCDate(),d.getUTCMonth()):`${d.getUTCDate()} ${MONTHS[d.getUTCMonth()].slice(0,3)}`};
 const hourOf=t=>((t%1)+1)%1*24;
 const hhmm=t=>{const h=hourOf(t);return String(Math.floor(h)).padStart(2,'0')+':'+String(Math.floor((h%1)*60)).padStart(2,'0')};
 function weatherOf(day){
@@ -515,13 +516,17 @@ function renderHeader(){
   $('sPurse').textContent=(S.purse<0?'−':'')+fmt(Math.abs(S.purse))+' mk'; $('sPurse').classList.toggle('debt',S.purse<0); $('sPurse').title=S.purse<0?`In debt · ${REDDAYS_LIMIT-(S.redDays||0)} days left`:'Your purse';
   $('sDate').textContent=S.paused?'Paused · '+shortDate(S.t):dateStr(S.t);
   document.body.classList.toggle('paused',!!S.paused);
-  [...$('clock').children].forEach(b=>b.setAttribute('aria-pressed', S.paused ? b.dataset.sp==='0' : +b.dataset.sp===speed));
   const unread=(S.seq||0)-(S.seen||0);
   $('badge').hidden=unread<=0; $('badge').textContent=unread>9?'9+':unread;
   $('bell').setAttribute('aria-label', unread>0?`Open the chronicle, ${unread} new`:'Open the chronicle');
   const tg=$('vToggle');
   if(view==='town'){ $('vLabel').textContent='Sea chart'; tg.disabled=false; $('vIcon').innerHTML=ICON_CHART; }
   else { const c=(townAt&&shipsIn(townAt).length)?townAt:selShip().at; $('vLabel').textContent=c?CITIES[c].name:'Town'; tg.disabled=!c; $('vIcon').innerHTML=ICON_TOWN; }
+  const ban=$('evBanner'), evs=view==='town'&&townAt?eventsIn(townAt).sort((a,b)=>a.start-b.start):[];
+  if(evs.length){ const e=evs[0], on=e.start<=Math.floor(S.t);
+    ban.hidden=false; ban.dataset.c=townAt;
+    ban.innerHTML=`<b>${EVENTS[e.kind].name}</b><span>${on?`until ${shortDate(e.end-1)}`:`from ${shortDate(e.start)}`}${evs.length>1?` · +${evs.length-1}`:''}</span>`; }
+  else ban.hidden=true;
   const hint=$('hint');
   if(pendingSail!==null){ hint.hidden=false; hint.innerHTML=`<span>${S.ships[pendingSail]&&S.ships[pendingSail].voy?'New course: tap a port for':'Tap a port for'} the ${unitName(pendingSail)}</span><button data-act="cancelplan">Cancel</button>`; }
   else hint.hidden=true;
@@ -580,10 +585,8 @@ function renderDlg(){
         ${pxHtml('buy',g,qb,!canBuy)}
         ${pxHtml('sell',g,qs,!held,cls)}</li>`}).join('');
     const lots=[1,5,10,'max'].map(q=>`<button data-act="qty" data-q="${q}" aria-pressed="${S.qty===q}">${q==='max'?'Max':q}</button>`).join('');
-    body.innerHTML=`<div><span class="eyebrow">Market hall</span><h2 id="dlgTitle">${here.name}</h2><p class="note">The town makes ${names(here.prod)} and wants ${names(here.want)}.</p></div>
-      ${eventsHtml(cid)}
-      ${standingHtml(cid)}
-      ${valid?shipBtns+`<div class="lots">Lots of <div class="seg" role="group" aria-label="Lot size">${lots}</div></div><p class="note small">Each barrel you buy raises the price and each one you sell lowers it, so ${S.qty===1?'larger lots cost more per barrel':'the buttons show the average price per barrel for the whole lot, and the total below'}. Towns drift back to normal over a few days. Arrows show the change since yesterday.</p>`:'<p class="note">None of your ships lies in port here and you have no warehouse, so there is nothing to load or unload.</p>'}
+    body.innerHTML=`<div><span class="eyebrow">Market hall</span><h2 id="dlgTitle">${here.name}</h2></div>
+      ${valid?shipBtns+`<div class="lots">Lots of <div class="seg" role="group" aria-label="Lot size">${lots}</div></div><p class="note small">${S.qty===1?'Every barrel moves the price.':'Average price per barrel, total below.'}</p>`:'<p class="note">None of your ships lies in port here and you have no warehouse, so there is nothing to load or unload.</p>'}
       <ul class="goods">${rows}</ul>
       <div class="dfoot"><span>Purse <b>${fmt(S.purse)} mk</b></span>${valid?`<span>${dlg.ship==='wh'?'Warehouse':sh.name+'’s hold'} <b>${sh.used()} / ${cap}</b></span>`:''}</div>`;
     return;
@@ -624,7 +627,7 @@ function renderDlg(){
   if(dlg.kind==='rathaus'){
     const cid=dlg.arg, here=CITIES[cid];
     body.innerHTML=`<div><span class="eyebrow">Town hall</span><h2 id="dlgTitle">The Rathaus of ${here.name}</h2><p class="note">The council keeps the rolls of the Hanse: who trades, who prospers, and who might one day sit among the aldermen.</p></div>
-      ${standingHtml(cid)}${goalsHtml()}${rankingHtml()}
+      ${standingHtml(cid)}${eventsIn(cid).length?`<div><span class="eyebrow">Town news</span>${eventsHtml(cid)}</div>`:''}${goalsHtml()}${rankingHtml()}
       <div class="row"><button class="btn ghost" data-act="hall">Hall of fame</button></div>`;
     return;
   }
@@ -753,7 +756,7 @@ function renderDlg(){
       ${seasons.length>1?`<div class="shipsel">Season ${seasons.map(n=>`<button data-act="hallseason" data-v="${n}" aria-pressed="${n===season}">${n}</button>`).join('')}</div>`:''}
       <div id="boardBox"><p class="note">Fetching the rolls from the Diet…</p></div>`;
     const want=dlg, esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-    const row=(x,n)=>`<tr class="${x.you?'cur':''}"><td>${n}</td><td style="text-align:left">${x.you?'★ ':''}${esc(x.house)}<small style="display:block;color:var(--ink-soft)">${R[x.result]||esc(x.result)}</small></td><td>${x.wonDay||'–'}</td><td>${fmt(x.fortune)}</td></tr>`;
+    const row=(x,n)=>`<tr class="${x.you?'cur':''}"><td>${n}</td><td style="text-align:left">${x.you?'★ ':''}<span data-noi18n>${esc(x.house)}</span><small style="display:block;color:var(--ink-soft)">${R[x.result]||esc(x.result)}</small></td><td>${x.wonDay||'–'}</td><td>${fmt(x.fortune)}</td></tr>`;
     Leaderboard.top(season).then(({rows,me})=>{ if(dlg!==want) return; const box=$('boardBox'); if(!box) return;
       box.innerHTML=rows.length?`<div class="ledger-wrap"><table class="hall"><thead><tr><th>#</th><th>House</th><th>Alderman on day</th><th>Fortune</th></tr></thead><tbody>${rows.map((x,i)=>row(x,i+1)).join('')}${me?`<tr><td colspan="4" style="text-align:center">…</td></tr>${row(me,me.rank)}`:''}</tbody></table></div>`
         :`<p class="note">No house has finished season ${season} yet. Be the first on the rolls.</p>`;
@@ -778,6 +781,8 @@ function renderDlg(){
   }
   if(dlg.kind==='settings'){
     body.innerHTML=`<div><span class="eyebrow">Settings</span><h2 id="dlgTitle">The Kontor</h2></div>
+    <div class="setrow speedrow"><p>Game speed<small>${S.paused?'Paused: look around as you like; orders wait.':'At 1× a day passes in about five minutes.'}</small></p><div class="clockseg" role="group" aria-label="Game speed">${[[0,'Pause'],[1,'Normal speed'],[2,'Double speed'],[4,'Four times speed']].map(([v,l])=>`<button data-act="speed" data-sp="${v}" aria-label="${l}" aria-pressed="${S.paused?v===0:v===speed}">${v?v+'×':'<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="3" height="9" fill="currentColor"/><rect x="7" y="1.5" width="3" height="9" fill="currentColor"/></svg>'}</button>`).join('')}</div></div>
+    <div class="setrow"><p>Language<small>Menus and buttons. Letters and news follow in the next update.</small></p><div class="seg" role="group" aria-label="Language" data-noi18n>${Object.entries(L10N.langs).map(([k,n])=>`<button data-act="lang" data-v="${k}" lang="${k}" aria-pressed="${L10N.lang===k}">${n}</button>`).join('')}</div></div>
     ${onOff('music','Music','Harbour airs by day and night, the sea chart, winter and feast days.')}
     ${onOff('sfx','Sound effects','Surf, gulls, rain and the noon bell.')}
     ${onOff('awake','Keep the screen on','The screen does not dim or lock while the game is open.')}
@@ -787,7 +792,7 @@ function renderDlg(){
     <div class="setrow"><p>Title screen<small>Continue, new season, hall of fame.</small></p><button class="btn ghost" data-act="totitle">Back to the title</button></div>
     ${cloudRows()}
     <div class="setrow"><p>Your house<small>The name shown on the leaderboard.</small></p><input id="houseName" class="namein" maxlength="32" value="${esc(S.house||'')}" placeholder="e.g. House of Vosge" aria-label="House name" spellcheck="false"></div>
-    <div class="setrow"><p>Season ${S.season}<small>${S.titles&&S.titles.alderman?'You are alderman. Keep trading to raise your fortune.':'Become alderman of the Hanse: Burgher in 4 towns and a fortune of 60,000 mk.'}</small></p><button class="btn ghost" data-act="hall">Hall of fame</button></div>
+    <div class="setrow"><p>Season ${S.season}<small>${S.titles&&S.titles.alderman?'You are alderman. Keep trading to raise your fortune.':`Become alderman of the Hanse: Burgher in ${ALDERMAN.burgher} towns and a fortune of ${fmt(ALDERMAN.fortune)} mk.`}</small></p><button class="btn ghost" data-act="hall">Hall of fame</button></div>
     <div class="setrow">${confirmReset===true?`<p>End season ${S.season} and begin a new one?</p><div class="row"><button class="btn" data-act="reset2">End the season</button><button class="btn ghost" data-act="reset0">Keep playing</button></div>`:`<p>End the season<small>Your result goes into the hall of fame, and a new season begins.</small></p><button class="btn ghost" data-act="reset1">End this season</button>`}</div>
     <div class="setrow">${confirmReset==='delete'?`<p>Delete everything?<small>Your leaderboard entries, the cloud copy, your sign-in and the season on this device are removed for good.</small></p><div class="row"><button class="btn" data-act="delall2">Delete it all</button><button class="btn ghost" data-act="reset0">Keep it</button></div>`
       :`<p>Delete my data<small>Removes your leaderboard entries, cloud save and sign-in, and starts over.</small></p><button class="btn ghost" data-act="delall1">Delete…</button>`}</div>
@@ -1143,11 +1148,13 @@ function trade(act,gid){
   renderHeader(); renderDlg();
 }
 const ORDERS=new Set(['buy','sell','store','load','buywh','hiremgr','mmode','mstep','mres','firemgr2','order','hire','dismiss','plan','sail','radd','rdel','runall','run','rld','rgo','rstop','cjoin','cleave','cdisband']);
-function pausedRefuse(){ toast('Time is paused. Press 1× to give orders again.'); }
+function pausedRefuse(){ toast('Time is paused. Tap the date, then choose a speed to give orders again.'); }
 function onAct(b){
   const a=b.dataset.act;
   if(S.paused && ORDERS.has(a)) return pausedRefuse();
-  if(a==='buy'||a==='sell') trade(a,b.dataset.g);
+  if(a==='speed') setSpeed(+b.dataset.sp);
+  else if(a==='lang'){ if(b.dataset.v===L10N.lang) return; PREFS.lang=b.dataset.v; savePrefs(); save(); location.reload(); }
+  else if(a==='buy'||a==='sell') trade(a,b.dataset.g);
   else if(a==='qty'){S.qty=b.dataset.q==='max'?'max':+b.dataset.q; renderDlg();}
   else if(a==='mship'){ dlg.ship=b.dataset.i==='wh'?'wh':+b.dataset.i; if(dlg.ship!=='wh') S.sel=dlg.ship; renderDlg(); }
   else if(a==='store'||a==='load') transfer(a,b.dataset.g);
@@ -1228,11 +1235,14 @@ function enterTown(cid){ if(!cid||!shipsIn(cid).length) return; townAt=cid; pend
 function setView(v){ if(v==='town'&&!townAt) return; view=v; if(scene) scene.refreshView(); renderAll(); }
 $('vToggle').onclick=()=>{ if(view==='town') setView('sea'); else { const c=townAt&&shipsIn(townAt).length?townAt:selShip().at; enterTown(c); } };
 $('vFleet').onclick=()=>openDlg('fleet');
-$('clock').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; const v=+b.dataset.sp;
+function setSpeed(v){
   if(v===0){ if(!S.paused){ S.paused=true; log('Time stands still. You may look around, but give no orders until it moves again',true); toast('Paused. Look around as you like; orders wait until time moves again.'); } }
   else { if(S.paused){ S.paused=false; toast('Time moves again.'); } speed=v; }
-  save(); renderAll(); tickUI(); });
+  save(); renderAll(); tickUI(); renderDlg(); }
+$('sDate').parentNode.addEventListener('click',()=>{ confirmReset=false; openDlg('settings'); });
+$('sDate').parentNode.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); confirmReset=false; openDlg('settings'); } });
 $('bell').onclick=()=>openDlg('chron');
+$('evBanner').onclick=()=>{ const c=$('evBanner').dataset.c; if(c) openDlg('rathaus',c); };
 $('vSettings').onclick=()=>{ confirmReset=false; openDlg('settings'); };
 $('lClose').onclick=()=>{ $('letterWrap').hidden=true; };
 
@@ -2008,7 +2018,7 @@ class Main extends Phaser.Scene{
     // landmarks
     const hallIm=place('HALL',25,15,3,2); place('CHURCH',31,18,5,3);
     const tapTo=(obj,fn)=>{ obj.setInteractive(obj.type==='Image'?{useHandCursor:true,pixelPerfect:true,alphaTolerance:10}:{useHandCursor:true}); obj.on('pointerup',()=>{ if(this.drag&&this.drag.d>TAP) return; fn(); }); };
-    const sign=(text,X,Y,Z,fn,dark)=>{ const t=add(this.add.text(TX(X,Y),TY(X,Y,Z),text,{fontFamily:'"IM Fell English SC", Georgia, serif',fontSize:'17px',color:dark?'#f4ead0':'#2b1c10',backgroundColor:dark?'#5a2a1c':'#ecdcb2',padding:{x:8,y:2},resolution:TEXT_RES}).setOrigin(.5).setDepth(9200)); t.noTint=true; tapTo(t,fn); return t; };
+    const sign=(text,X,Y,Z,fn,dark)=>{ const t=add(this.add.text(TX(X,Y),TY(X,Y,Z),L10N.t(text),{fontFamily:'"IM Fell English SC", Georgia, serif',fontSize:'17px',color:dark?'#f4ead0':'#2b1c10',backgroundColor:dark?'#5a2a1c':'#ecdcb2',padding:{x:8,y:2},resolution:TEXT_RES}).setOrigin(.5).setDepth(9200)); t.noTint=true; tapTo(t,fn); return t; };
     { const act=activeIn(cid).map(e=>e.kind);
       if(act.includes('festival')||act.includes('diet')){ const g=add(this.add.graphics().setDepth(TY(29,22)+5)); const cols=[0xc8402c,0xf0cf78,0x3f5a7a,0xe6dcc0,0x4f6f3a];
         const strings=[[[24,18,2.2],[30,23,2.2]],[[24,23,2.0],[30,18,2.0]],[[23.5,20.5,2.4],[30.5,20.5,2.4]],[[16.5,17.5,2.0],[23.5,17.5,2.0]]];
@@ -2162,9 +2172,9 @@ $('tHall').onclick=()=>openDlg('hall');
 showTitle();
 // Lifecycle. The Android app calls these directly from onPause/onResume; the browser uses visibilitychange.
 let backgrounded=false;
-let speedBeforeBg=1;
+let speedBeforeBg=4;
 window.koggeBackground=()=>{ if(backgrounded) return; backgrounded=true; speedBeforeBg=speed; speed=1; devPace=1; save(); if(!S.paused) pushSchedule(); else { try{ window.KoggeNative&&window.KoggeNative.cancelAll(); }catch(e){} } };
-window.koggeForeground=()=>{ if(!backgrounded) return; backgrounded=false; speed=speedBeforeBg||1;   // time away runs at 1×; the chosen speed resumes
+window.koggeForeground=()=>{ if(!backgrounded) return; backgrounded=false; speed=speedBeforeBg||4;   // time away runs at 1×; the chosen speed resumes
   try{ window.KoggeNative&&window.KoggeNative.cancelAll(); }catch(e){} renderAll(); };
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) window.koggeBackground(); else window.koggeForeground(); });
 window.addEventListener('pagehide',save);
@@ -2180,6 +2190,6 @@ function start(){
 const fonts=document.fonts?Promise.all(['17px "IM Fell English SC"','15px "IM Fell English"','italic 15px "IM Fell English"'].map(f=>document.fonts.load(f))):Promise.resolve();
 Promise.race([fonts,new Promise(r=>setTimeout(r,2500))]).catch(()=>{}).then(start);
 Cloud.init();
-if(DEV) window.__alderman={ openDlg, get S(){ return S; }, Cloud, NameFilter, sail, redirect, redirectPath, seaClear, route, CITIES, shipPos, advanceTo:t=>advanceTo(t) };   // console helpers on localhost / ?dev only
+if(DEV) window.__alderman={ openDlg, get S(){ return S; }, Cloud, NameFilter, sail, redirect, redirectPath, seaClear, route, CITIES, EVENTS, get speed(){ return speed; }, shipPos, advanceTo:t=>advanceTo(t) };   // console helpers on localhost / ?dev only
 if(newerSave) setTimeout(()=>toast('Your save comes from a newer version of Alderman. It is kept aside; reload the newest version to continue it.'),1500);
 })();

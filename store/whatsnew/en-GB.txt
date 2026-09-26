@@ -1,1 +1,1 @@
-Tester feedback: full-width bars, speed control below the header, icons for goods, change course at sea, a town hall for standings, keep the screen on, and a quieter chronicle.
+﻿Tester feedback: 4x speed by default, speed and language in Settings (now in German too), a lighter market, town news as a small banner, standing in the town hall, and no more "Alarms & reminders" screen on reopen.

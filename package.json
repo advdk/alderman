@@ -1,6 +1,6 @@
 {
   "name": "alderman",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Alderman: A Hanseatic Trading Tale",
   "scripts": {
@@ -24,7 +24,7 @@
     "firebase": "^12.19.0",
     "google-auth-library": "^11.1.0"
   },
-  "androidVersionCode": 10001,
+  "androidVersionCode": 10002,
   "dependencies": {
     "@capacitor-community/keep-awake": "^8.0.1",
     "@capacitor-firebase/authentication": "^8.5.2",
